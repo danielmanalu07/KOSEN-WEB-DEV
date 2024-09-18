@@ -22,35 +22,35 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($attendances as $attendance)
-                            <tr>
-                                <td>{{ $attendance->id }}</td>
-                                <td>{{ $attendance->title }}</td>
-                                <td>{{ $attendance->description }}</td>
-                                <td>{{ $attendance->start_time }}</td>
-                                <td>{{ $attendance->batas_start_time }}</td>
-                                <td>{{ $attendance->end_time }}</td>
-                                <td>{{ $attendance->batas_end_time }}</td>
-                                <td>
-                                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#editModal" data-id="{{ $attendance->id }}"
-                                        data-title="{{ $attendance->title }}"
-                                        data-description="{{ $attendance->description }}"
-                                        data-start_time="{{ $attendance->start_time }}"
-                                        data-batas_start_time="{{ $attendance->batas_start_time }}"
-                                        data-end_time="{{ $attendance->end_time }}"
-                                        data-batas_end_time="{{ $attendance->batas_end_time }}"
-                                        data-use_qrcode="{{ $attendance->code }}">
-                                        Edit
-                                    </button>
-                                    <form action="{{ route('attendance.destroy', $attendance->id) }}" method="POST"
-                                        style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                    </form>
-                                </td>
-                            </tr>
+                            @foreach ($attendances as $attendance)
+                                <tr>
+                                    <td>{{ $attendance->id }}</td>
+                                    <td>{{ $attendance->title }}</td>
+                                    <td>{{ $attendance->description }}</td>
+                                    <td>{{ $attendance->start_time }}</td>
+                                    <td>{{ $attendance->batas_start_time }}</td>
+                                    <td>{{ $attendance->end_time }}</td>
+                                    <td>{{ $attendance->batas_end_time }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#editModal" data-id="{{ $attendance->id }}"
+                                            data-title="{{ $attendance->title }}"
+                                            data-description="{{ $attendance->description }}"
+                                            data-start_time="{{ $attendance->start_time }}"
+                                            data-batas_start_time="{{ $attendance->batas_start_time }}"
+                                            data-end_time="{{ $attendance->end_time }}"
+                                            data-batas_end_time="{{ $attendance->batas_end_time }}"
+                                            data-use_qrcode="{{ $attendance->code }}">
+                                            Edit
+                                        </button>
+                                        <form action="{{ route('attendance.destroy', $attendance->id) }}"
+                                            method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                        </form>
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -76,8 +76,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"
-                                required></textarea>
+                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="start_time" class="form-label">Start Time</label>
@@ -94,7 +93,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="batas_end_time" class="form-label">Batas End Time</label>
-                            <input type="time" class="form-control" id="batas_end_time" name="batas_end_time" required>
+                            <input type="time" class="form-control" id="batas_end_time" name="batas_end_time"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label for="code" class="form-label">QRCode</label>
@@ -103,10 +103,10 @@
                         </div>
                         <div class="mb-3">
                             <label for="position" class="form-label">Posisi Karyawan</label><br>
-                            @foreach($positions as $position)
-                            <input type="checkbox" id="create_position_{{ $position->id }}" name="position[]"
-                                value="{{ $position->name }}">
-                            <label for="create_position_{{ $position->id }}">{{ $position->name }}</label><br>
+                            @foreach ($positions as $position)
+                                <input type="checkbox" id="create_position_{{ $position->id }}" name="position[]"
+                                    value="{{ $position->name }}">
+                                <label for="create_position_{{ $position->id }}">{{ $position->name }}</label><br>
                             @endforeach
                         </div>
                         <button type="submit" class="btn btn-primary">Tambah</button>
@@ -135,17 +135,17 @@
                         </div>
                         <div class="mb-3">
                             <label for="edit-description" class="form-label">Description</label>
-                            <textarea class="form-control" id="edit-description" name="description" rows="3"
-                                required></textarea>
+                            <textarea class="form-control" id="edit-description" name="description" rows="3" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="edit-start_time" class="form-label">Start Time</label>
-                            <input type="time" class="form-control" id="edit-start_time" name="start_time" required>
+                            <input type="time" class="form-control" id="edit-start_time" name="start_time"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label for="edit-batas_start_time" class="form-label">Batas Start Time</label>
-                            <input type="time" class="form-control" id="edit-batas_start_time" name="batas_start_time"
-                                required>
+                            <input type="time" class="form-control" id="edit-batas_start_time"
+                                name="batas_start_time" required>
                         </div>
                         <div class="mb-3">
                             <label for="edit-end_time" class="form-label">End Time</label>
@@ -153,20 +153,20 @@
                         </div>
                         <div class="mb-3">
                             <label for="edit-batas_end_time" class="form-label">Batas End Time</label>
-                            <input type="time" class="form-control" id="edit-batas_end_time" name="batas_end_time"
-                                required>
+                            <input type="time" class="form-control" id="edit-batas_end_time"
+                                name="batas_end_time" required>
                         </div>
                         <div class="mb-3">
                             <label for="edit-use_qrcode" class="form-label">QRCode</label>
                             <input type="checkbox" id="edit-use_qrcode" name="use_qrcode">
                             <label for="edit-use_qrcode">Ingin Menggunakan QRCode</label>
-                        </div>  
+                        </div>
                         <div class="mb-3">
                             <label for="edit-position" class="form-label">Posisi Karyawan</label><br>
-                            @foreach($positions as $position)
-                            <input type="checkbox" id="edit_position_{{ $position->id }}" name="position[]"
-                                value="{{ $position->name }}">
-                            <label for="edit_position_{{ $position->id }}">{{ $position->name }}</label><br>
+                            @foreach ($positions as $position)
+                                <input type="checkbox" id="edit_position_{{ $position->id }}" name="position[]"
+                                    value="{{ $position->name }}">
+                                <label for="edit_position_{{ $position->id }}">{{ $position->name }}</label><br>
                             @endforeach
                         </div>
                         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
@@ -185,9 +185,9 @@
 </x-layout>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         var editModal = document.getElementById('editModal');
-        editModal.addEventListener('show.bs.modal', function (event) {
+        editModal.addEventListener('show.bs.modal', function(event) {
             var button = event.relatedTarget;
             var id = button.getAttribute('data-id');
             var title = button.getAttribute('data-title');
@@ -210,8 +210,9 @@
 
             // Update positions checkboxes
             var positionCheckboxes = document.querySelectorAll('#editModal input[name="position[]"]');
-            positionCheckboxes.forEach(function (checkbox) {
-                checkbox.checked = button.getAttribute('data-positions').split(',').includes(checkbox.value);
+            positionCheckboxes.forEach(function(checkbox) {
+                checkbox.checked = button.getAttribute('data-positions').split(',').includes(
+                    checkbox.value);
             });
 
             // Handle delete button
