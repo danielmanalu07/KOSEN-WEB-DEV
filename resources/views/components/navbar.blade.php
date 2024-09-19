@@ -2,7 +2,7 @@
     <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
             <a href="#" class="text-nowrap logo-img">
-                <h2 class="text-primary" style="font-weight: 900;">KOMFEN</h2>
+                <h2 class="text-primary" style="font-weight: 900;">KOMFEND</h2>
             </a>
             <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                 <i class="ti ti-x fs-8"></i>
@@ -15,7 +15,7 @@
                     <span class="hide-menu">Home</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="/rekap" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ route('dashboard.admin') }}" aria-expanded="false">
                         <iconify-icon icon="solar:file-text-line-duotone"></iconify-icon>
                         <span class="hide-menu">Dashboard</span>
                     </a>
@@ -34,8 +34,8 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="/position" aria-expanded="false">
-                        <iconify-icon icon="mdi:teacher"></iconify-icon>
+                    <a class="sidebar-link" href="{{ url('/admin/users') }}" aria-expanded="false">
+                        <iconify-icon icon="mdi:users"></iconify-icon>
                         <span class="hide-menu">Data Pegawai</span>
                     </a>
                 </li>
