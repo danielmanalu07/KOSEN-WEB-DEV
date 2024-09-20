@@ -91,7 +91,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password<sup class="text-danger">*</sup></label>
-                            <input type="password" class="form-control" id="password" name="password" required>
+                            <input type="password" class="form-control" id="password" name="password" >
                         </div>
                         <div class="mb-3">
                             <label for="umur" class="form-label">Umur<sup class="text-danger">*</sup></label>

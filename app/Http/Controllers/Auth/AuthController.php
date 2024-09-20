@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -16,11 +18,16 @@ class AuthController extends Controller
                 'password' => 'required',
             ]);
 
-            $credentials = $request->only('email', 'password');
+            // Ambil user berdasarkan email
+            $user = User::where('email', $request->email)->first();
 
-            if (Auth::attempt($credentials)) {
-                $user = Auth::user();
+            // Cek apakah password yang dimasukkan sama dengan password di database (tanpa hash)
+            if ($user && $user->password === $request->password) {
 
+                // Jika password sesuai, login secara manual
+                Auth::login($user);
+
+                // Cek peran pengguna dan arahkan ke halaman yang sesuai
                 if ($user->role === 'admin') {
                     return redirect()->route('dashboard.admin')->with('success', 'Berhasil Masuk!');
                 } elseif ($user->role === 'pegawai') {
@@ -30,17 +37,17 @@ class AuthController extends Controller
                 }
             } else {
                 return redirect()->back()->withErrors([
-                    'error' => 'Email dan Password Salah',
+                    'error' => 'Email atau Password salah',
                 ]);
             }
         }
         return view('Auth.login');
     }
 
+
     public function Logout()
     {
         Auth::logout();
         return redirect()->route('login')->with('success', 'Berhasil Keluar!');
     }
-
 }
