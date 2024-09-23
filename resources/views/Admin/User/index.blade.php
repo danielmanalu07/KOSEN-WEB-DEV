@@ -100,14 +100,18 @@
                         <div class="mb-3">
                             <label for="tanggal_lahir" class="form-label">Tanggal Lahir<sup
                                     class="text-danger">*</sup></label>
-                            <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir"
-                                required>
+                            <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" required>
                         </div>
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone<sup class="text-danger">*</sup></label>
                             <input type="number" class="form-control" id="phone" name="phone" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        {{-- <button type="submit" id="submitButton" class="btn btn-primary">Simpan</button> --}}
+                        <button type="submit" class="btn w-100 btn-info" id="submitButton">
+                            <span class="spinner-border spinner-border-sm d-none" role="status"
+                                aria-hidden="true"></span>
+                            <span class="button-text">Simpan </span>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -136,11 +140,11 @@
                             <label for="editEmail" class="form-label">Email<sup class="text-danger">*</sup></label>
                             <input type="email" class="form-control" id="editEmail" name="email" required>
                         </div>
-                        <div class="mb-3">
+                        {{-- <div class="mb-3">
                             <label for="editPassword" class="form-label">Password (kosongkan jika tidak ingin
                                 mengubah)</label>
                             <input type="password" class="form-control" id="editPassword" name="password">
-                        </div>
+                        </div> --}}
                         <div class="mb-3">
                             <label for="editUmur" class="form-label">Umur<sup class="text-danger">*</sup></label>
                             <input type="number" class="form-control" id="editUmur" name="umur" required>
@@ -155,7 +159,11 @@
                             <label for="editPhone" class="form-label">Phone<sup class="text-danger">*</sup></label>
                             <input type="number" class="form-control" id="editPhone" name="phone" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        <button type="submit" class="btn w-100 btn-info" id="submitButton">
+                            <span class="spinner-border spinner-border-sm d-none" role="status"
+                                aria-hidden="true"></span>
+                            <span class="button-text">Simpan Perubahan</span>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -190,6 +198,18 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('addEmployeeForm').addEventListener('submit', function(event) {
+                var submitButton = document.getElementById('submitButton');
+                var spinner = submitButton.querySelector('.spinner-border');
+                var buttonText = submitButton.querySelector('.button-text');
+
+                spinner.classList.remove('d-none');
+                buttonText.textContent = 'Loading...';
+
+                submitButton.disabled = true;
+            });
+        });
         $(document).ready(function() {
             $('#addEmployeeForm').on('submit', function(e) {
                 e.preventDefault();

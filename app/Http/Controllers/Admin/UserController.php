@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -22,7 +22,8 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create() {}
+    public function create()
+    {}
 
     /**
      * Store a newly created resource in storage.
@@ -53,13 +54,26 @@ class UserController extends Controller
 
             $user->save();
 
+            $mailData = [
+                'recipient' => $request->email,
+                'fromEmail' => env('MAIL_FROM_ADDRESS'),
+                'fromName' => env('MAIL_FROM_NAME'),
+                'subject' => 'Account Information',
+                'body' => view('Admin.User.Mail.AccountMail', ['user' => $user])->render(),
+            ];
+
+            Mail::send('Admin.User.Mail.AccountMail', ['user' => $user], function ($message) use ($mailData) {
+                $message->to($mailData['recipient'])
+                    ->from($mailData['fromEmail'], $mailData['fromName'])
+                    ->subject($mailData['subject']);
+            });
+
             // Kembalikan password acak untuk dikirimkan kepada pengguna (atau ditampilkan)
             return response()->json(['success' => 'Data Berhasil Ditambahkan!', 'password' => $randomPassword]);
         } catch (\Throwable $th) {
             return response()->json(['error' => 'Terjadi Kesalahan: ' . $th->getMessage()], 500);
         }
     }
-
 
     /**
      * Display the specified resource.
@@ -98,9 +112,9 @@ class UserController extends Controller
             $user->phone = $request->input('phone');
 
             // Generate random password baru jika diisi
-            if ($request->filled('password')) {
-                $user->password = Str::random(10); // Panjang password acak baru
-            }
+            // if ($request->filled('password')) {
+            //     $user->password = Str::random(10); // Panjang password acak baru
+            // }
 
             $user->save();
 
@@ -109,7 +123,6 @@ class UserController extends Controller
             return response()->json(['error' => 'Terjadi Kesalahan: ' . $th->getMessage()], 500);
         }
     }
-
 
     /**
      * Remove the specified resource from storage.
