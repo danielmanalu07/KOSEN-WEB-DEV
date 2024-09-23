@@ -89,10 +89,10 @@
                             <label for="email" class="form-label">Email<sup class="text-danger">*</sup></label>
                             <input type="email" class="form-control" id="email" name="email" required>
                         </div>
-                        <div class="mb-3">
+                        {{-- <div class="mb-3">
                             <label for="password" class="form-label">Password<sup class="text-danger">*</sup></label>
                             <input type="password" class="form-control" id="password" name="password" >
-                        </div>
+                        </div> --}}
                         <div class="mb-3">
                             <label for="umur" class="form-label">Umur<sup class="text-danger">*</sup></label>
                             <input type="number" class="form-control" id="umur" name="umur" required>
