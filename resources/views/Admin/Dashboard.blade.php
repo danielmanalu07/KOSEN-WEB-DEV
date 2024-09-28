@@ -1,4 +1,6 @@
-<x-layout>
+@extends('components.layout')
+@section('content')
+<main>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         .row {
@@ -97,4 +99,5 @@
             });
         @endif
     </script>
-</x-layout>
+</main>
+@endsection

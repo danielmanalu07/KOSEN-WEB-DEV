@@ -16,6 +16,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::where('nama', '!=', 'admin')->get();
+        
         return view('Admin.User.index', compact('users'));
     }
 

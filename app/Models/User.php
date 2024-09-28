@@ -28,6 +28,10 @@ class User extends Authenticatable
         'role',
     ];
 
+
+    public function presences() {
+        return $this->hasMany(Presence::class);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
