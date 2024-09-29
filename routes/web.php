@@ -20,7 +20,8 @@ Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function
         Route::resource('presences', PresenceController::class);
         Route::get('/presences/show-qrcode', [PresenceController::class, 'showQrcode'])->name('presences.qrcode');
         Route::get('admin/presences/{presence}', [PresenceController::class, 'show'])->name('presences.show');
-        
+        Route::get('/download-qrcode-pdf', [PresenceController::class, 'downloadQrCodePDF'])->name('download.qrcode.pdf');
+
 
 
         // Route::get('/presences/show-qrcode', [PresenceController::class, 'showQrcode'])->name('presences.showQrcode');

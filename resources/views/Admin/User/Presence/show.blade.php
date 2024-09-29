@@ -1,24 +1,21 @@
 @extends('components.layout')
 @section('content')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
-    crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
 
 <div class="container py-5">
     <div class="row">
         <div class="col-md-12 mb-3 mb-md-0">
             <!-- Attendance Title -->
-            <h1 class="fs-1 fw-bold mb-3">{{ $attendance->title }}</h1> <!-- Increased size and boldness -->
+            <h1 class="fs-1 fw-bold mb-3">{{ $attendance->title }}</h1>
             <p class="text-muted mb-4">{{ $attendance->description }}</p>
 
             <!-- Attendance Time Badges -->
             <div class="mb-4">
                 <span class="badge text-bg-light border shadow-sm me-2">
-                    Masuk: {{ substr($attendance->start_time, 0, -3) }} - {{ substr($attendance->batas_start_time ?? '',
-                    0, -3) }}
+                    Masuk: {{ substr($attendance->start_time, 0, -3) }} - {{ substr($attendance->batas_start_time ?? '', 0, -3) }}
                 </span>
                 <span class="badge text-bg-light border shadow-sm">
-                    Pulang: {{ substr($attendance->end_time, 0, -3) }} - {{ substr($attendance->batas_end_time ?? '', 0,
-                    -3) }}
+                    Pulang: {{ substr($attendance->end_time, 0, -3) }} - {{ substr($attendance->batas_end_time ?? '', 0, -3) }}
                 </span>
             </div>
 
@@ -28,8 +25,7 @@
             </button>
 
             <!-- QR Code Modal -->
-            <div class="modal fade" id="qrcodeModal" tabindex="-1" aria-labelledby="qrcodeModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="qrcodeModal" tabindex="-1" aria-labelledby="qrcodeModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -39,11 +35,11 @@
                             </button>
                         </div>
                         <div class="modal-body text-center">
-                            <!-- Center the QR code in modal -->
                             <h4 class="mb-3">QR Code</h4>
                             @if($attendance->code)
-                            <img src="{{ asset($attendance->code) }}" alt="QR Code untuk {{ $attendance->title }}"
-                                class="img-fluid">
+                            <img src="{{ asset($attendance->code) }}" alt="QR Code untuk {{ $attendance->title }}" class="img-fluid" id="qrcodeImage">
+                            <br>
+                            <button class="btn btn-primary mt-3" id="downloadQrCode">Download QR Code PDF</button>
                             @else
                             <p>QR Code belum tersedia.</p>
                             @endif
@@ -53,12 +49,9 @@
             </div>
         </div>
     </div>
-    
 
-
-    {{-- History table section moved here --}}
+    {{-- History table section --}}
     <div class="col-md-12 py-5">
-        <!-- This should also be col-md-12 to span the entire width -->
         <h5 class="mb-3">Histori 30 Hari Terakhir</h5>
         <div class="table-responsive">
             <table class="table table-bordered table-striped">
@@ -113,9 +106,20 @@
         </div>
     </div>
 </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#downloadQrCode').on('click', function() {
+            // Ambil ID kehadiran
+            var attendanceId = "{{ $attendance->id }}"; // Menyimpan ID kehadiran
+            
+            // Buat permintaan ke rute download QR Code PDF dengan ID kehadiran
+            window.location.href = "{{ route('download.qrcode.pdf') }}?attendanceId=" + encodeURIComponent(attendanceId);
+        });
+    });
+</script>
 
 @endsection

@@ -23,38 +23,6 @@ class PresenceController extends Controller
         ]);
     }
 
-    // Menampilkan detail kehadiran
-    // public function show(Attendances $attendance, $id)
-    // {
-    //     // Ambil tanggal 30 hari terakhir
-    //     $priodDate = collect();
-    //     for ($i = 0; $i < 30; $i++) {
-    //         $priodDate->push(Carbon::now()->subDays($i)->toDateString());
-    //     }
-
-    //     // Load related data for attendance
-    //     $attendance->load(['presences.user']);
-
-    //     // Find the attendance record by ID
-    //     $attendanceRecord = Attendances::findOrFail($id);
-
-    //     // Jika QR Code belum digenerate, generate QR Code
-    //     if (!$attendanceRecord->code) {
-    //         $attendanceRecord->code = $this->generateQRCode($attendanceRecord->id);
-    //         $attendanceRecord->save();
-    //     }
-
-    //     // Ambil histori kehadiran user
-    //     $history = $attendance->presences()->with('user')->get();
-
-    //     return view('Admin.User.Presence.show', [
-    //         "title" => "Data Detail Kehadiran",
-    //         "attendance" => $attendance,
-    //         "priodDate" => $priodDate,
-    //         "history" => $history,
-    //         "code" => $attendanceRecord->code, // Pass the code directly
-    //     ]);
-    // }
     public function show($id)
     {
         // Ambil data absensi berdasarkan id
@@ -79,41 +47,35 @@ class PresenceController extends Controller
         return view('Admin.User.Presence.show', compact('attendance', 'priodDate', 'history'));
     }
 
-    // Menampilkan QR Code untuk absensi
-    // public function showQrcode(Request $request)
-    // {
-    //     $code = $request->query('code');
-    //     $qrcode = $this->getQrCode($code);
-
-    //     return view('Admin.User.Presence.index', [
-    //         "title" => "Generate Absensi QRCode",
-    //         "qrcode" => $qrcode,
-    //         "code" => $code,
-    //     ]);
-    // }
-    // public function showQrcode(Request $request, $id)
-    // {
-    //     $attendance = Attendances::findOrFail($id);
-
-    //     // Jika QR Code belum digenerate, generate QR Code
-    //     if (!$attendance->code) {
-    //         $attendance->code = $this->generateQRCode($attendance->id);
-    //         $attendance->save();
-    //     };
-    //     // Menampilkan view dengan QR code
-    //     return view('Admin.User.Presence.qrcode', compact('attendance'));
-    // }
-
 
     // Mendownload QR Code dalam bentuk PDF
     public function downloadQrCodePDF(Request $request)
     {
-        $code = $request->query('code');
-        $qrcode = $this->getQrCode($code);
+        // Ambil ID kehadiran dari query
+        $attendanceId = $request->query('attendanceId');
 
-        $html = '<img src="' . $qrcode . '" />';
+        // Generate QR code in SVG format dengan URL yang tepat
+        $qrCode = QrCode::format('svg')->size(200)->generate(route('attendances.show', ['attendance' => $attendanceId]));
+
+        // Define a file path for storing the QR code
+        $path = 'qrcodes/attendance-' . $attendanceId . '.svg';
+
+        // Store the generated SVG content to a file
+        \Storage::disk('public')->put($path, $qrCode);
+
+        // Cek apakah file gambar dapat diakses
+        if (!\Storage::disk('public')->exists($path)) {
+            return response()->json(['error' => 'QR Code not found'], 404);
+        }
+
+        // Membuat HTML untuk PDF
+        $html = '<img src="' . asset('storage/' . $path) . '" style="width: 100%; height: auto;" />';
+
+        // Mengunduh PDF
         return Pdf::loadHTML($html)->setWarnings(false)->download('qrcode.pdf');
     }
+
+
 
     // Fungsi untuk mengambil QR code
     public function getQrCode(?string $code): string
