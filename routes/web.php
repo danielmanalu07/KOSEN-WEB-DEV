@@ -18,8 +18,12 @@ Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function
         Route::resource('users', UserController::class);
         Route::resource('attendances', AttendanceController::class);
         Route::resource('presences', PresenceController::class);
-        Route::get('/presences/show-qrcode', [PresenceController::class, 'showQrcode'])->name('presences.showQrcode');
-        Route::post('/presences/generate/{id}', [PresenceController::class, 'generateQRCode'])->name('presences.generate');
+        Route::get('/presences/show-qrcode', [PresenceController::class, 'showQrcode'])->name('presences.qrcode');
+        Route::get('admin/presences/{presence}', [PresenceController::class, 'show'])->name('presences.show');
+        
+
+
+        // Route::get('/presences/show-qrcode', [PresenceController::class, 'showQrcode'])->name('presences.showQrcode');
     });
 });
 

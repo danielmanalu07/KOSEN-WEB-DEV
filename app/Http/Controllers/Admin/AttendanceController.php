@@ -9,6 +9,7 @@ use App\Models\Attendances;
 
 class AttendanceController extends Controller
 {
+    // Menampilkan daftar jadwal absensi
     public function index()
     {
         $attendances = Attendances::all();
@@ -18,6 +19,7 @@ class AttendanceController extends Controller
     // Menyimpan jadwal absensi baru ke database dan generate QR Code
     public function store(Request $request)
     {
+        // Validasi input data
         $request->validate([
             'title' => 'required',
             'description' => 'required|max:500',
@@ -26,7 +28,7 @@ class AttendanceController extends Controller
             'batas_end_time' => 'required',
         ]);
 
-        // Simpan jadwal absensi
+        // Simpan data absensi ke dalam database
         $attendance = Attendances::create([
             'title' => $request->title,
             'description' => $request->description,
@@ -35,62 +37,46 @@ class AttendanceController extends Controller
             'batas_end_time' => $request->batas_end_time,
         ]);
 
-        // Generate QR Code dan simpan path ke database
+        // Generate QR Code dan simpan path ke dalam database
         $attendance->code = $this->generateQRCode($attendance->id);
         $attendance->save();
 
-        return redirect()->route('Admin.User.Absensi.index')->with('success', 'Jadwal absensi berhasil dibuat dengan QR Code.');
+        // Redirect dengan pesan sukses
+        return redirect()->back()->with('success', 'Jadwal absensi berhasil dibuat dengan QR Code.');
     }
 
-    // Generate QR Code untuk absensi
-    // private function generateQRCode($attendanceId)
-    // {
-    //     $qrCodeContent = route('presences.create', ['attendance_id' => $attendanceId]);
-    //     $qrCode = QrCode::format('png')->size(200)->generate($qrCodeContent);
+    // Fungsi untuk generate QR Code dan menyimpannya ke folder public/qrcodes
 
-    //     // Tentukan lokasi sementara untuk menyimpan QR Code
-    //     $tempFilePath = tempnam(sys_get_temp_dir(), 'qr_') . '.png';
-    //     file_put_contents($tempFilePath, $qrCode);
-
-    //     // Tentukan path tujuan file
-    //     $destinationPath = public_path('qrcodes/attendance_' . $attendanceId . '.png');
-
-    //     // Pindahkan file ke lokasi tujuan
-    //     rename($tempFilePath, $destinationPath);
-
-    //     return 'qrcodes/attendance_' . $attendanceId . '.png'; // Simpan path QR Code di database
-    // }
-    // Generate QR Code untuk absensi
-    private function generateQRCode($attendanceId)
+    // Generate QR code in SVG format
+    public function generateQRCode($attendanceId)
     {
-        $qrCodeContent = route('presences.create', ['attendance_id' => $attendanceId]);
-        // Use the 'png' format with GD
-        $qrCode = QrCode::format('png')->size(200)->generate($qrCodeContent);
+        // Generate QR code in SVG format (no need for Imagick)
+        $qrCode = QrCode::format('svg')->size(200)->generate(route('attendances.show', $attendanceId));
 
-        // Tentukan path tujuan file
-        $destinationPath = public_path('qrcodes/attendance_' . $attendanceId . '.png');
+        // Define a file path for storing the QR code
+        $path = 'qrcodes/attendance-' . $attendanceId . '.svg';
 
-        // Simpan QR Code ke file
-        file_put_contents($destinationPath, $qrCode);
+        // Store the generated SVG content to a file
+        \Storage::disk('public')->put($path, $qrCode);
 
-        return 'qrcodes/attendance_' . $attendanceId . '.png'; // Simpan path QR Code di database
+        // Return the file path
+        return 'storage/' . $path;
     }
 
 
-    // Menampilkan QR Code di halaman detail absensi
     // Menampilkan QR Code di halaman detail absensi
     public function show($id)
     {
-        // Ambil data attendance berdasarkan id
+        // Ambil data absensi berdasarkan id
         $attendance = Attendances::findOrFail($id);
 
-        // Generate QR Code jika belum ada
+        // Jika QR Code belum digenerate, generate QR Code
         if (!$attendance->code) {
             $attendance->code = $this->generateQRCode($attendance->id);
             $attendance->save();
         }
 
-        // Tampilkan view dengan data attendance
+        // Tampilkan view dengan data attendance dan QR code
         return view('Admin.User.Absensi.show', compact('attendance'));
     }
 }
