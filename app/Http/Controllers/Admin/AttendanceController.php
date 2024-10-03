@@ -51,10 +51,10 @@ class AttendanceController extends Controller
     public function generateQRCode($attendanceId)
     {
         // Generate QR code in SVG format (no need for Imagick)
-        $qrCode = QrCode::format('svg')->size(200)->generate(route('attendances.show', $attendanceId));
+        $qrCode = QrCode::format('png')->size(200)->generate(route('attendances.show', $attendanceId));
 
         // Define a file path for storing the QR code
-        $path = 'qrcodes/attendance-' . $attendanceId . '.svg';
+        $path = 'qrcodes/attendance-' . $attendanceId . '.png';
 
         // Store the generated SVG content to a file
         \Storage::disk('public')->put($path, $qrCode);

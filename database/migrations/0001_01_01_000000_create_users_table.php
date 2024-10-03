@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('phone')->unique()->nullable();
             $table->enum('status', ['aktif', 'tidak aktif']);
             $table->enum('role', ['admin', 'pegawai']);
+            $table->string('qrcode')->nullable(); // for qrcode kalau kosong berarti hanya pakai button
+
             $table->rememberToken();
             $table->timestamps();
         });

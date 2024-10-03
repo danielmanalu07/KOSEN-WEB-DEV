@@ -51,29 +51,49 @@ class PresenceController extends Controller
     // Mendownload QR Code dalam bentuk PDF
     public function downloadQrCodePDF(Request $request)
     {
-        // Ambil ID kehadiran dari query
         $attendanceId = $request->query('attendanceId');
 
-        // Generate QR code in SVG format dengan URL yang tepat
-        $qrCode = QrCode::format('svg')->size(200)->generate(route('attendances.show', ['attendance' => $attendanceId]));
+        // Generate QR code
+        $qrCode = QrCode::format('png')->size(200)->generate(route('attendances.show', ['attendance' => $attendanceId]));
 
-        // Define a file path for storing the QR code
-        $path = 'qrcodes/attendance-' . $attendanceId . '.svg';
+        // Encode QR code to Data URI
+        $dataUri = 'data:image/png;base64,' . base64_encode($qrCode);
 
-        // Store the generated SVG content to a file
-        \Storage::disk('public')->put($path, $qrCode);
+        // Create HTML for PDF
+        $html = '<img src="' . $dataUri . '" style="width: 100%; height: auto;" />';
 
-        // Cek apakah file gambar dapat diakses
-        if (!\Storage::disk('public')->exists($path)) {
-            return response()->json(['error' => 'QR Code not found'], 404);
-        }
-
-        // Membuat HTML untuk PDF
-        $html = '<img src="' . asset('storage/' . $path) . '" style="width: 100%; height: auto;" />';
-
-        // Mengunduh PDF
+        // Download PDF
         return Pdf::loadHTML($html)->setWarnings(false)->download('qrcode.pdf');
     }
+
+    // public function downloadQrCodePDF(Request $request)
+    // {
+    //     // Ambil ID kehadiran dari query
+    //     $attendanceId = $request->query('attendanceId');
+
+    //     // Generate QR code in PNG format
+    //     $qrCode = QrCode::format('png')->size(200)->generate(route('attendances.show', ['attendance' => $attendanceId]));
+
+    //     // Define a file path for storing the QR code as PNG
+    //     $path = 'qrcodes/attendance-' . $attendanceId . '.png';
+
+    //     // Store the generated PNG content to a file
+    //     \Storage::disk('public')->put($path, $qrCode);
+
+    //     // Cek apakah file gambar dapat diakses
+    //     if (!\Storage::disk('public')->exists($path)) {
+    //         return response()->json(['error' => 'QR Code not found'], 404);
+    //     }
+
+    //     // Path ke file gambar
+    //     $imagePath = asset('storage/' . $path);
+
+    //     // Membuat HTML untuk PDF, memasukkan gambar PNG ke dalamnya
+    //     $html = '<img src="' . $imagePath . '" style="width: 200px; height: auto;" />';
+
+    //     // Generate PDF dan unduh
+    //     return Pdf::loadHTML($html)->setWarnings(false)->download('qrcode.pdf');
+    // }
 
 
 
