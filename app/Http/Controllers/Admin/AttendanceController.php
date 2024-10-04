@@ -37,8 +37,6 @@ class AttendanceController extends Controller
             'batas_end_time' => $request->batas_end_time,
         ]);
 
-        // Generate QR Code dan simpan path ke dalam database
-        $attendance->code = $this->generateQRCode($attendance->id);
         $attendance->save();
 
         // Redirect dengan pesan sukses
@@ -48,20 +46,20 @@ class AttendanceController extends Controller
     // Fungsi untuk generate QR Code dan menyimpannya ke folder public/qrcodes
 
     // Generate QR code in SVG format
-    public function generateQRCode($attendanceId)
-    {
-        // Generate QR code in SVG format (no need for Imagick)
-        $qrCode = QrCode::format('png')->size(200)->generate(route('attendances.show', $attendanceId));
+    // public function generateQRCode($attendanceId)
+    // {
+    //     // Generate QR code in SVG format (no need for Imagick)
+    //     $qrCode = QrCode::format('png')->size(200)->generate(route('attendances.show', $attendanceId));
 
-        // Define a file path for storing the QR code
-        $path = 'qrcodes/attendance-' . $attendanceId . '.png';
+    //     // Define a file path for storing the QR code
+    //     $path = 'qrcodes/attendance-' . $attendanceId . '.png';
 
-        // Store the generated SVG content to a file
-        \Storage::disk('public')->put($path, $qrCode);
+    //     // Store the generated SVG content to a file
+    //     \Storage::disk('public')->put($path, $qrCode);
 
-        // Return the file path
-        return 'storage/' . $path;
-    }
+    //     // Return the file path
+    //     return 'storage/' . $path;
+    // }
 
 
     // Menampilkan QR Code di halaman detail absensi

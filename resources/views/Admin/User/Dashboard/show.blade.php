@@ -7,7 +7,7 @@
 
             <p><strong>Nama:</strong> {{ $user->nama }}</p>
             <p><strong>Email:</strong> {{ $user->email }}</p>
-            <p><strong>Umur:</strong> {{ $user->umur }}</p> 
+            <p><strong>Umur:</strong> {{ $user->umur }}</p>
             <p><strong>Tanggal Lahir:</strong> {{ $user->tanggal_lahir }}</p>
             <p><strong>Phone:</strong> {{ $user->phone }}</p>
             <p><strong>Status:</strong> {{ $user->status }}</p>
@@ -18,6 +18,7 @@
             <br>
 
             <a href="{{ route('users.index') }}" class="btn btn-primary">Kembali</a>
+            <a href="{{ route('users.downloadQrCodePDF', $user->id) }}" class="btn btn-danger">Download PDF</a>
         </div>
     </div>
 </main>

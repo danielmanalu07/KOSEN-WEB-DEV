@@ -23,9 +23,9 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create() {
+    public function create()
+    {
         return view('Admin.User.Dashboard.create');
-
     }
 
     /**
@@ -92,25 +92,25 @@ class UserController extends Controller
     {
         // Generate QR code in PNG format
         $qrCode = QrCode::format('png')->size(200)->generate(route('attendances.show', $userId));
-    
+
         // Define a unique file name for the QR code
         $imageName = 'user-' . $userId . '.png';
-    
+
         // Define the path for storing the QR code
         $path = public_path('storage/qrcodes/' . $imageName);
-    
+
         // Check if the directory exists, if not, create it
         if (!file_exists(dirname($path))) {
             mkdir(dirname($path), 0755, true); // Create directory recursively if it doesn't exist
         }
-    
+
         // Store the generated PNG content to a file
         file_put_contents($path, $qrCode);
-    
+
         // Return the file path
         return 'storage/qrcodes/' . $imageName;
     }
-    
+
 
     /**
      * Display the specified resource.
@@ -118,6 +118,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::findOrFail($id);
+
         return view('Admin.User.Dashboard.show', compact('user')); // Ganti dengan view detail user Anda
     }
 
@@ -188,5 +189,27 @@ class UserController extends Controller
         return response()->json([
             'qr_code_url' => $qrCodePath ? asset($qrCodePath) : null, // Menggunakan helper asset() untuk mendapatkan URL
         ]);
+    }
+    public function downloadQrCodePDF($id)
+    {
+        // Ambil data user berdasarkan ID
+        $user = User::findOrFail($id);
+
+        // Pastikan QR code ada di database
+        if (!$user->qrcode) {
+            return response()->json(['error' => 'QR Code tidak ditemukan untuk user ini.'], 404);
+        }
+
+        // Generate QR code dalam format PNG
+        $qrCode = QrCode::format('png')->size(200)->generate(route('attendances.show', ['attendance' => $id]));
+
+        // Encode QR code ke Data URI
+        $dataUri = 'data:image/png;base64,' . base64_encode($qrCode);
+
+        // Buat HTML untuk PDF
+        $html = '<img src="' . $dataUri . '" style="width: 100%; height: auto;" />';
+
+        // Download PDF
+        return \PDF::loadHTML($html)->setWarnings(false)->download('qrcode_user_' . $id . '.pdf');
     }
 }

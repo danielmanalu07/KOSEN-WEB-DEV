@@ -18,6 +18,10 @@ return new class extends Migration
             $table->date("presence_date");
             $table->time("presence_enter_time");
             $table->time("presence_out_time")->nullable();
+            $table->string('qr_code')->nullable(); // Column to store scanned QR code
+            $table->boolean('is_late')->default(false); // Add this line to your presences migration
+
+
             $table->timestamps();
         });
     }

@@ -17,6 +17,7 @@ class Presence extends Model
         'presence_date',
         'presence_enter_time',
         'presence_out_time',
+        'is_late'
     ];
 
     public function user() {
