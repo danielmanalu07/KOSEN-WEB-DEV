@@ -12,12 +12,9 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert([
-            'nama' => 'admin',
-            'email' => 'admin@gmail.com',
-            'password' => 'admin12345',
-            'status' => 'aktif',
-            'role' => 'admin',
+        DB::table('admins')->insert([
+            'username' => 'admin.kominfo',
+            'password' => bcrypt('admin#12345'),
         ]);
     }
 }

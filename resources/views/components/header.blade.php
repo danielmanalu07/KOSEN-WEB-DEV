@@ -12,7 +12,8 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        <img src="{{ asset('assets/images/profile/user-1.jpg') }}" alt="User Profile" width="35" height="35" class="rounded-circle" />
+                        <img src="{{ asset('assets/images/profile/user-1.jpg') }}" alt="User Profile" width="35"
+                            height="35" class="rounded-circle" />
 
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
@@ -21,7 +22,7 @@
                                 <i class="ti ti-user fs-6"></i>
                                 <p class="mb-0">My Profile</p>
                             </a>
-                            <form id="logoutForm" action="{{ route('logout') }}" method="GET">
+                            <form id="logoutForm" action="{{ route('Admin.Logout') }}" method="GET">
                                 @csrf
                                 <button type="submit" id="logoutButton" class="btn btn-outline-primary w-100">
                                     <span class="spinner-border spinner-border-sm d-none" role="status"

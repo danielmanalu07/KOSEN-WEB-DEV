@@ -15,7 +15,7 @@
                     <span class="hide-menu">Home</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('dashboard.admin') }}" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ route('Admin.Dashboard') }}" aria-expanded="false">
                         <iconify-icon icon="solar:file-text-line-duotone"></iconify-icon>
                         <span class="hide-menu">Dashboard</span>
                     </a>
@@ -40,7 +40,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{url('/admin/presences')}}" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ url('/admin/presences') }}" aria-expanded="false">
                         <iconify-icon icon="mdi:teacher"></iconify-icon>
                         <span class="hide-menu">Data Absensi</span>
                     </a>

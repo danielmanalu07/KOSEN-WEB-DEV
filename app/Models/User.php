@@ -17,21 +17,11 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'nama',
-        'photo',
+        'name',
         'email',
         'password',
-        'umur',
-        'tanggal_lahir',
-        'phone',
-        'status',
-        'role',
     ];
 
-
-    public function presences() {
-        return $this->hasMany(Presence::class);
-    }
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -53,9 +43,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = $value;
     }
 }

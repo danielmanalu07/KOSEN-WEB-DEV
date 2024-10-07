@@ -1,36 +1,20 @@
 <?php
 
-use App\Http\Middleware\AuthMiddleware;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\AttendanceController;
-use App\Http\Controllers\Admin\PresenceController;
 use App\Http\Controllers\Admin\UserController;
-use App\Models\Presence;
+use App\Http\Middleware\AdminMiddleware;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect('/user/login');
+    return redirect()->route('Admin.Login');
 });
 
 Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function () {
-    Route::middleware(AuthMiddleware::class)->group(function () {
-        Route::get('dashboard', [AdminController::class, 'Dashboard'])->name('dashboard.admin');
+    Route::match(['get', 'post'], 'login', 'AdminController@Login')->name('Admin.Login');
+
+    Route::middleware(AdminMiddleware::class)->group(function () {
+        Route::get('logout', 'AdminController@Logout')->name('Admin.Logout');
+        Route::get('dashboard', 'AdminController@Dashboard')->name('Admin.Dashboard');
         Route::resource('users', UserController::class);
-        Route::resource('attendances', AttendanceController::class);
-        Route::resource('presences', PresenceController::class);
-        Route::get('/presences/show-qrcode', [PresenceController::class, 'showQrcode'])->name('presences.qrcode');
-        Route::get('admin/presences/{presence}', [PresenceController::class, 'show'])->name('presences.show');
-        Route::get('/download-qrcode-pdf', [PresenceController::class, 'downloadQrCodePDF'])->name('download.qrcode.pdf');
-        Route::get('/users/{id}/download-qrcode-pdf', [UserController::class, 'downloadQrCodePDF'])->name('users.downloadQrCodePDF');
-
-
-
-
-        // Route::get('/presences/show-qrcode', [PresenceController::class, 'showQrcode'])->name('presences.showQrcode');
+        Route::get('scan/{id}', [UserController::class, 'scan']);
     });
-});
-
-Route::prefix('/user')->namespace('App\Http\Controllers')->group(function () {
-    Route::match(['get', 'post'], 'login', [App\Http\Controllers\Auth\AuthController::class, 'Login'])->name('login');
-    Route::get('logout', [App\Http\Controllers\Auth\AuthController::class, 'Logout'])->name('logout')->middleware(AuthMiddleware::class);
 });
