@@ -108,120 +108,67 @@ class PresenceController extends Controller
             "notPresentData" => $notPresentData,
         ]);
     }
-
-    // Menyimpan data kehadiran user
-    // public function presentUser(Request $request, Attendances $attendance)
-    // {
-    //     $validated = $request->validate([
-    //         'user_id' => 'required|numeric',
-    //         "presence_date" => "required|date",
-    //     ]);
-
-    //     $user = User::findOrFail($validated['user_id']);
-
-    //     $presence = Presence::where('attendance_id', $attendance->id)
-    //         ->where('user_id', $user->id)
-    //         ->where('presence_date', $validated['presence_date'])
-    //         ->first();
-
-    //     if ($presence) {
-    //         return back()->with('failed', 'User sudah terdaftar hadir pada tanggal tersebut.');
-    //     }
-
-    //     Presence::create([
-    //         "attendance_id" => $attendance->id,
-    //         "user_id" => $user->id,
-    //         "presence_date" => $validated['presence_date'],
-    //         "presence_enter_time" => now()->toTimeString(),
-    //         "presence_out_time" => now()->toTimeString(),
-    //     ]);
-
-    //     return back()->with('success', "Berhasil menyimpan kehadiran untuk {$user->name}.");
-    // }
-
-    // // Fungsi helper untuk mendapatkan karyawan yang tidak hadir
-    // private function getNotPresentEmployees($presences)
-    // {
-    //     $uniquePresenceDates = $presences->unique("presence_date")->pluck('presence_date');
-    //     $uniquePresenceDatesAndUserIds = $uniquePresenceDates->map(function ($date) use ($presences) {
-    //         return [
-    //             "presence_date" => $date,
-    //             "user_ids" => $presences->where('presence_date', $date)->pluck('user_id')->toArray(),
-    //         ];
-    //     });
-
-    //     $notPresentData = [];
-    //     foreach ($uniquePresenceDatesAndUserIds as $presence) {
-    //         $notPresentData[] = [
-    //             "not_presence_date" => $presence['presence_date'],
-    //             "users" => User::with('position')
-    //                 ->onlyEmployees()
-    //                 ->whereNotIn('id', $presence['user_ids'])
-    //                 ->get()
-    //                 ->toArray(),
-    //         ];
-    //     }
-    //     return $notPresentData;
-    // }
-
     public function scan(Request $request)
     {
+        // Validasi input
         $request->validate([
             'qr_code' => 'required|string',
-            'attendance_id' => 'required|numeric',
+            'attendance_id' => 'required|integer|exists:attendances,id',
         ]);
     
-        // Parse the URL and extract the attendance ID if the QR code contains a URL
-        $qrCode = $request->qr_code;
-        $parsedUrl = parse_url($qrCode);
+        // Ambil input QR Code dan attendance_id
+        $qrCode = $request->input('qr_code');
+        $attendanceId = $request->input('attendance_id');
     
-        // If the URL contains an attendance ID, extract it from the path
-        if (isset($parsedUrl['path'])) {
-            $pathParts = explode('/', $parsedUrl['path']);
-            $attendanceId = end($pathParts); // Assuming the ID is the last part of the URL
-        } else {
-            return response()->json(['success' => false, 'message' => 'Invalid QR code format.']);
-        }
+        // Cari user berdasarkan QR code yang dipindai
+        $user = User::where('qrcode', $qrCode)->first();
     
-        // Find the attendance record based on the extracted attendance ID
-        $attendance = Attendances::find($attendanceId);
-    
-        if (!$attendance) {
-            return response()->json(['success' => false, 'message' => 'Attendance not found.']);
-        }
-    
-        // Proceed with user presence check and save logic here
-        $user = User::where('qrcode', $request->qr_code)->first();
-    
-        if ($user) {
-            $isLate = false;
-            $current_time = now();
-            $start_time = \Carbon\Carbon::parse($attendance->start_time);
-    
-            if ($current_time->greaterThan($start_time)) {
-                $isLate = true;
-            }
-    
-            Presence::create([
-                'user_id' => $user->id,
-                'attendance_id' => $attendance->id,
-                'presence_date' => now()->toDateString(),
-                'presence_enter_time' => $current_time->toTimeString(),
-                'qr_code' => $request->qr_code,
-                'is_late' => $isLate,
-            ]);
-    
+        // Jika user tidak ditemukan
+        if (!$user) {
             return response()->json([
-                'success' => true,
-                'user' => [
-                    'nama' => $user->nama,
-                    'photo' => $user->photo,
-                    'isLate' => $isLate,
-                ],
+                'success' => false,
+                'message' => 'User tidak ditemukan atau QR code tidak valid.'
             ]);
         }
     
-        return response()->json(['success' => false]);
+        // Cari absensi berdasarkan ID
+        $attendance = Attendances::findOrFail($attendanceId);
+    
+        // Cek apakah user sudah melakukan presensi pada hari ini untuk attendance yang sama
+        $presence = Presence::where('user_id', $user->id)
+            ->where('attendance_id', $attendanceId)
+            ->whereDate('presence_date', now()->toDateString())
+            ->first();
+    
+        // Jika sudah melakukan presensi
+        if ($presence) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda sudah melakukan presensi sebelumnya hari ini.'
+            ]);
+        }
+    
+        // Cek apakah terlambat (dibandingkan dengan batas waktu masuk)
+        $currentTime = now();
+        $isLate = $currentTime->greaterThanOrEqualTo(Carbon::parse($attendance->batas_start_time));
+    
+        // Simpan data presensi baru
+        Presence::create([
+            'user_id' => $user->id,
+            'attendance_id' => $attendanceId,
+            'presence_date' => now()->toDateString(),
+            'presence_enter_time' => now()->toTimeString(),
+            'is_late' => $isLate,
+        ]);
+    
+        // Berikan respons sukses
+        return response()->json([
+            'success' => true,
+            'user' => $user,
+            'message' => 'Presensi berhasil dicatat',
+            'is_late' => $isLate ? 'Terlambat' : 'Tepat waktu',
+        ]);
     }
+    
     
 }

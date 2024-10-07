@@ -1,10 +1,8 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Attendances;
 
 class AttendanceController extends Controller
@@ -16,7 +14,7 @@ class AttendanceController extends Controller
         return view('Admin.User.Absensi.index', compact('attendances'));
     }
 
-    // Menyimpan jadwal absensi baru ke database dan generate QR Code
+    // Menyimpan jadwal absensi baru ke database
     public function store(Request $request)
     {
         // Validasi input data
@@ -40,41 +38,16 @@ class AttendanceController extends Controller
         $attendance->save();
 
         // Redirect dengan pesan sukses
-        return redirect()->back()->with('success', 'Jadwal absensi berhasil dibuat dengan QR Code.');
+        return redirect()->back()->with('success', 'Jadwal absensi berhasil dibuat.');
     }
 
-    // Fungsi untuk generate QR Code dan menyimpannya ke folder public/qrcodes
-
-    // Generate QR code in SVG format
-    // public function generateQRCode($attendanceId)
-    // {
-    //     // Generate QR code in SVG format (no need for Imagick)
-    //     $qrCode = QrCode::format('png')->size(200)->generate(route('attendances.show', $attendanceId));
-
-    //     // Define a file path for storing the QR code
-    //     $path = 'qrcodes/attendance-' . $attendanceId . '.png';
-
-    //     // Store the generated SVG content to a file
-    //     \Storage::disk('public')->put($path, $qrCode);
-
-    //     // Return the file path
-    //     return 'storage/' . $path;
-    // }
-
-
-    // Menampilkan QR Code di halaman detail absensi
+    // Menampilkan detail absensi tanpa QR Code
     public function show($id)
     {
         // Ambil data absensi berdasarkan id
         $attendance = Attendances::findOrFail($id);
 
-        // Jika QR Code belum digenerate, generate QR Code
-        if (!$attendance->code) {
-            $attendance->code = $this->generateQRCode($attendance->id);
-            $attendance->save();
-        }
-
-        // Tampilkan view dengan data attendance dan QR code
+        // Tampilkan view dengan data attendance
         return view('Admin.User.Absensi.show', compact('attendance'));
     }
 }
