@@ -51,14 +51,16 @@ class UserController extends Controller
             // Save the user in the database
             $user->save();
 
-            // Generate QR Code and store it in the storage
-            $qrCodePath = 'qrcodes/user-' . $user->id . '.png';
+            // Generate QR Code and store it in the public storage
+            $imageName = 'user-' . $user->id . '.png';
+            $qrCodePath = public_path('storage/qrcodes/' . $imageName);
+            
+            // Generate QR code and save it to the public storage directory
             $qrCodeUrl = route('attendances.show', $user->id); // The URL the QR code will point to
-
-            QrCode::format('png')->size(200)->generate($qrCodeUrl, storage_path('app/public/' . $qrCodePath));
+            QrCode::format('png')->size(200)->generate($qrCodeUrl, $qrCodePath);
 
             // Update the user with the QR code path
-            $user->qrcode = 'storage/' . $qrCodePath; // Public path to access the QR code
+            $user->qrcode = 'storage/qrcodes/' . $imageName; // Public path to access the QR code
             $user->save();
 
             // Store the password in the session temporarily
@@ -66,6 +68,7 @@ class UserController extends Controller
 
             // Redirect to the user's detail page
             return redirect()->route('users.show', $user->id);
+
         } catch (\Throwable $th) {
             return response()->json(['error' => 'Terjadi Kesalahan: ' . $th->getMessage()], 500);
         }
