@@ -5,6 +5,12 @@
         <div class="col-md-8 offset-md-2">
             <h1>Detail Pegawai</h1>
 
+            @if (session('generated_password'))
+                <div class="alert alert-success">
+                    <strong>Password:</strong> {{ session('generated_password') }}
+                </div>
+            @endif
+
             <p><strong>Nama:</strong> {{ $user->nama }}</p>
             <p><strong>Email:</strong> {{ $user->email }}</p>
             <p><strong>Umur:</strong> {{ $user->umur }}</p>

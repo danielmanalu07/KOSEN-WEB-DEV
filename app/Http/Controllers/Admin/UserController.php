@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -6,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -34,36 +37,35 @@ class UserController extends Controller
             // Generate a random password
             $randomPassword = Str::random(8);
 
-            // Create a new user
+            // Create new user
             $user = new User();
             $user->nama = $request->input('nama');
             $user->email = $request->input('email');
             $user->umur = $request->input('umur');
-            $user->password = bcrypt($randomPassword);
+            $user->password = bcrypt($randomPassword); // Save the hashed password
             $user->tanggal_lahir = $request->input('tanggal_lahir');
             $user->phone = $request->input('phone');
             $user->status = 'aktif';
             $user->role = 'pegawai';
 
-            // Save the user to the database
+            // Save the user in the database
             $user->save();
 
-            // Send email with account information
-            $mailData = [
-                'recipient' => $request->email,
-                'fromEmail' => env('MAIL_FROM_ADDRESS'),
-                'fromName' => env('MAIL_FROM_NAME'),
-                'subject' => 'Account Information',
-                'body' => view('Admin.User.Mail.AccountMail', ['user' => $user])->render(),
-            ];
+            // Generate QR Code and store it in the storage
+            $qrCodePath = 'qrcodes/user-' . $user->id . '.png';
+            $qrCodeUrl = route('attendances.show', $user->id); // The URL the QR code will point to
 
-            Mail::send('Admin.User.Mail.AccountMail', ['user' => $user], function ($message) use ($mailData) {
-                $message->to($mailData['recipient'])
-                    ->from($mailData['fromEmail'], $mailData['fromName'])
-                    ->subject($mailData['subject']);
-            });
+            QrCode::format('png')->size(200)->generate($qrCodeUrl, storage_path('app/public/' . $qrCodePath));
 
-            return response()->json(['success' => 'Data Berhasil Ditambahkan!', 'password' => $randomPassword]);
+            // Update the user with the QR code path
+            $user->qrcode = 'storage/' . $qrCodePath; // Public path to access the QR code
+            $user->save();
+
+            // Store the password in the session temporarily
+            session()->flash('generated_password', $randomPassword);
+
+            // Redirect to the user's detail page
+            return redirect()->route('users.show', $user->id);
         } catch (\Throwable $th) {
             return response()->json(['error' => 'Terjadi Kesalahan: ' . $th->getMessage()], 500);
         }
