@@ -61,7 +61,7 @@ class UserController extends Controller
 
         $user->save();
 
-        $qrData = url('/admin/users/' . $user->id);
+        $qrData = $user->id;
         $qrFileName = 'qrcode-' . $user->id . '.png';
         $qrPath = public_path('qrcodes/' . $qrFileName);
 

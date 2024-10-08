@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -18,3 +19,6 @@ Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function
         Route::get('scan/{id}', [UserController::class, 'scan']);
     });
 });
+
+Route::get('/absen', [AbsensiController::class, 'Index'])->name('Absensi');
+Route::post('absen/create', [AbsensiController::class, 'Store'])->name('absen.store');

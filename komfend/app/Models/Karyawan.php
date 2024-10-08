@@ -9,6 +9,8 @@ class Karyawan extends Model
 {
     use HasFactory;
 
+    protected $guarded = ['id'];
+
     public $table = 'karyawans';
 
     protected $fillable = [
