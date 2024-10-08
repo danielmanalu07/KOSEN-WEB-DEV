@@ -21,43 +21,47 @@
                 @endif
                 <!-- Profile Image -->
                 <div class="card card-primary card-outline">
-                    <div class="card-body box-profile">
+                    <div class="card-body box-profile w-100">
                         <div class="text-center">
-                            <img class="profile-user-img img-fluid img-circle" src="{{ asset($karyawans->photo) }}"
-                                alt="User profile picture">
+                            <img class="profile-user-img img-fluid img-circle" src="{{ asset($karyawans->photo) }}" alt="User profile picture">
                         </div>
-
                         <h3 class="profile-username text-center">{{ $karyawans->nama }}</h3>
                         <p class="text-center">{{ $karyawans->email }}</p>
-
-                        <ul class="list-group list-group-unbordered mb-3">
-                            <li class="list-group-item">
-                                <b>Telepon</b> <a class="float-right">{{ $karyawans->phone }}</a>
-                            </li>
-                            <li class="list-group-item">
-                                <b>Tanggal Lahir</b> <a class="float-right">{{
-                                    \Carbon\Carbon::parse($karyawans->tanggal_lahir)->format('d M Y') }}</a>
-                            </li>
-                            <li class="list-group-item">
-                                <b>Status</b> <a class="float-right">{{ $karyawans->status }}</a>
-                            </li>
-                            <li class="list-group-item">
-                                <b>Di Buat</b> <a class="float-right">{{ date('d-m-Y',
-                                    strtotime($karyawans->created_at)) }}</a>
-                            </li>
-                            <li class="list-group-item">
-                                <b>Di Perbarui</b> <a class="float-right">{{ date('d-m-Y',
-                                    strtotime($karyawans->updated_at)) }}</a>
-                            </li>
-                        </ul>
-                        <a href="#" class="btn btn-warning btn-block" data-toggle="modal"
-                            data-target="#modalQr"><b>Lihat Kartu</b></a>
+                
+                        <!-- Menampilkan data di bawah label -->
+                        <div class="profile-info">
+                            <ul class="list-group list-group-unbordered mb-3">
+                                <li class="list-group-item text-center">
+                                    <b>Telepon</b>
+                                    <p>{{ $karyawans->phone }}</p>
+                                </li>
+                                <li class="list-group-item text-center">
+                                    <b>Tanggal Lahir</b>
+                                    <p>{{ \Carbon\Carbon::parse($karyawans->tanggal_lahir)->format('d M Y') }}</p>
+                                </li>
+                                <li class="list-group-item text-center">
+                                    <b>Status</b>
+                                    <p>{{ $karyawans->status }}</p>
+                                </li>
+                                <li class="list-group-item text-center">
+                                    <b>Di Buat</b>
+                                    <p>{{ date('d-m-Y', strtotime($karyawans->created_at)) }}</p>
+                                </li>
+                                <li class="list-group-item text-center">
+                                    <b>Di Perbarui</b>
+                                    <p>{{ date('d-m-Y', strtotime($karyawans->updated_at)) }}</p>
+                                </li>
+                            </ul>
+                        </div>
+                
+                        <a href="#" class="btn btn-warning btn-block" data-toggle="modal" data-target="#modalQr"><b>Lihat Kartu</b></a>
                     </div>
                     <!-- /.card-body -->
                 </div>
+                
                 <!-- /.card -->
 
-                <!-- About Me Box -->
+                {{-- <!-- About Me Box -->
                 <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">Profile</h3>
@@ -69,7 +73,7 @@
                     </div>
                     <!-- /.card-body -->
                 </div>
-                <!-- /.card -->
+                <!-- /.card --> --}}
             </div>
             <!-- /.col -->
             <div class="col-md-9">
