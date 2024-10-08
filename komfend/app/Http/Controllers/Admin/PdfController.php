@@ -13,21 +13,15 @@ class PdfController extends Controller
 {
     public function downloadKartuSatuan(Karyawan $karyawan)
     {
-        // Verifikasi untuk User yang login apakah dia Admin
-        // Jika status=1, maka akan lanjut kode di bawah
-        // Jika status != 1, maka akan 403 Forbidden
-    
-        // Ambil path QR code yang sudah disimpan di database
-        $qrCodePath = $karyawan->qrcode;
-    
-        // Render PDF menggunakan view dengan data karyawan dan path QR code
+        // Render PDF menggunakan view dengan data karyawan
         $pdf = PDF::loadView('Karyawan/kartu-s', [
-            'data' => $karyawan,
-            'qr' => asset($qrCodePath) // Generate full URL to the QR code
+            'data' => $karyawan, // Pastikan ini mengirimkan $karyawan ke tampilan
+            'qr' => asset($karyawan->qrcode) // Anda bisa gunakan ini untuk jika Anda perlu menggunakan URL
         ]);
     
         // Download file PDF dengan nama yang sesuai
         return $pdf->download('Kartu-Karyawan-' . $karyawan->id . '.pdf');
     }
+    
     
 }
