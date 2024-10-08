@@ -84,7 +84,9 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $karyawans = Karyawan::findOrFail($id);
+
+        return view('Karyawan.Show', compact('karyawans'));
     }
 
     /**
@@ -98,9 +100,67 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'nama' => 'required',
+            'email' => 'required|email',
+            'phone' => 'required|numeric',
+            'tanggal_lahir' => 'required|date',
+            'photo' => 'nullable|mimes:png,jpg,jpeg',
+        ]);
+
+        // Cari karyawan berdasarkan ID
+        $karyawan = Karyawan::findOrFail($id);
+
+        // Update data karyawan
+        $karyawan->nama = $request->input('nama');
+        $karyawan->email = $request->input('email');
+        $karyawan->phone = $request->input('phone');
+        $karyawan->tanggal_lahir = $request->input('tanggal_lahir');
+        $karyawan->status = $request->input('status', 'aktif'); // default 'aktif' jika tidak ada input
+
+        // Update foto jika ada file yang diupload
+        if ($request->file('photo')) {
+            // Hapus foto lama jika ada
+            if ($karyawan->photo && file_exists(public_path($karyawan->photo))) {
+                unlink(public_path($karyawan->photo));
+            }
+
+            // Simpan foto baru
+            $fileName = $request->nama . '.' . $request->file('photo')->extension();
+            $filePath = public_path('gambar/users');
+
+            if (!file_exists($filePath)) {
+                mkdir($filePath, 0755, true);
+            }
+
+            $request->file('photo')->move($filePath, $fileName);
+            $karyawan->photo = 'gambar/users/' . $fileName;
+        }
+
+        // Update QR Code jika diperlukan
+        $qrData = $karyawan->id;
+        $qrFileName = 'qrcode-' . $karyawan->id . '.png';
+        $qrPath = public_path('qrcodes/' . $qrFileName);
+
+        if (!file_exists(public_path('qrcodes'))) {
+            mkdir(public_path('qrcodes'), 0755, true);
+        }
+
+        QrCode::format('png')
+            ->size(200)
+            ->generate($qrData, $qrPath);
+
+        $karyawan->qrcode = 'qrcodes/' . $qrFileName;
+
+        // Simpan perubahan ke database
+        $karyawan->save();
+
+        return redirect()->back()->with('success', 'Data karyawan berhasil diperbarui!');
     }
 
     /**
