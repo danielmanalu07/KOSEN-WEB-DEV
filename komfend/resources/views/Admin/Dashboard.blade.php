@@ -21,7 +21,7 @@
                         Absensi Pegawai
                     </div>
                     <div class="card-body">
-                        <b>100</b>
+                        <b>{{ $absensi }}</b>
                     </div>
                 </div>
             </div>
@@ -32,7 +32,7 @@
                         Data Pegawai
                     </div>
                     <div class="card-body">
-                        <b>100</b>
+                        <b>{{ $karyawan }}</b>
                     </div>
                 </div>
             </div>
@@ -43,32 +43,29 @@
                         Riwayat Absensi
                     </div>
                     <div class="card-body">
-                        <b>100</b>
+                        <b>{{ $absen }}</b>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="row mt-4">
-            <div class="col-lg-6 col-md-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-info text-bg-dark">
-                        Grafik Data Absensi
-                    </div>
-                    <div class="card-body">
-                        <canvas id="grafik1"></canvas>
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-bg-dark">
+                    Grafik Data Pegawai
+                </div>
+                <div class="card-body">
+                    <div id="grafik_karyawan">
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-6 col-md-12">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-danger text-bg-dark">
-                        Grafik Data Pegawai
-                    </div>
-                    <div class="card-body">
-                        <canvas id="grafik2"></canvas>
-                    </div>
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-bg-dark">
+                    Grafik Data Absensi
+                </div>
+                <div class="card-body">
+                    <div id="grafik_absensi"></div>
                 </div>
             </div>
         </div>
@@ -77,18 +74,65 @@
 
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script type="text/javascript">
+            var karyawan = <?php echo json_encode($total_karyawan); ?>;
+            var bulan_karyawan = <?php echo json_encode($bulan_karyawan); ?>;
+            Highcharts.chart('grafik_karyawan', {
+                title: {
+                    text: 'Grafik Total Pegawai'
+                },
+                xAxis: {
+                    categories: bulan_karyawan
+                },
+                yAxis: {
+                    title: {
+                        text: 'Jumlah Pegawai'
+                    },
+                    min: 0,
+                    allowDecimals: false
+                },
+                series: [{
+                    name: 'Jumlah Pegawai',
+                    data: karyawan
+                }],
+                tooltip: {
+                    formatter: function() {
+                        return '<b>' + this.x + '</b><br/>' +
+                            this.series.name + ': ' + this.y;
+                    }
+                }
+            });
+
+            var absen = <?php echo json_encode($total_absen); ?>;
+            var bulan_absensi = <?php echo json_encode($bulan_absensi); ?>;
+            Highcharts.chart('grafik_absensi', {
+                title: {
+                    text: 'Grafik Total Absensi'
+                },
+                xAxis: {
+                    categories: bulan_absensi
+                },
+                yAxis: {
+                    title: {
+                        text: 'Jumlah Absensi'
+                    },
+                    min: 0,
+                    allowDecimals: false
+                },
+                series: [{
+                    name: 'Jumlah Absensi',
+                    data: absen
+                }],
+                tooltip: {
+                    formatter: function() {
+                        return '<b>' + this.x + '</b><br/>' +
+                            this.series.name + ': ' + this.y;
+                    }
+                }
+            });
+        </script>
         <script>
-            const currentDateElement = document.getElementById('current-date');
-            const today = new Date();
-            const options = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            };
-            currentDateElement.textContent = today.toLocaleDateString('id-ID', options)
-
-
             @if (session('success'))
                 Swal.fire({
                     icon: 'success',

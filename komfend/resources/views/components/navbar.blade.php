@@ -28,7 +28,7 @@
                     <span class="hide-menu">Karyawan</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ url('/admin/attendances') }}" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ url('/admin/absensis') }}" aria-expanded="false">
                         <iconify-icon icon="solar:user-plus-rounded-line-duotone"></iconify-icon>
                         <span class="hide-menu">Absensi Pegawai</span>
                     </a>
@@ -40,7 +40,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ url('/admin/presences') }}" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ route('data.absen') }}" aria-expanded="false">
                         <iconify-icon icon="mdi:teacher"></iconify-icon>
                         <span class="hide-menu">Data Absensi</span>
                     </a>

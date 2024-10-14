@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Karyawan;
+use File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -76,6 +78,23 @@ class UserController extends Controller
         $user->qrcode = 'qrcodes/' . $qrFileName;
         $user->save();
 
+        try {
+            $mailData = [
+                'recipient' => $request->email,
+                'fromEmail' => env('MAIL_FROM_ADDRESS'),
+                'fromName' => env('MAIL_FROM_NAME'),
+                'subject' => 'Information Account',
+                'body' => view('Mail.SendMail', ['user' => $user])->render(),
+            ];
+            Mail::send('Mail.SendMail', ['user' => $user], function ($message) use ($mailData) {
+                $message->to($mailData['recipient'])
+                    ->from($mailData['fromEmail'], $mailData['fromName'])
+                    ->subject($mailData['subject']);
+            });
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Terjadi Kesalahan Pengiriman Email. Silahkan Coba Lagi' . $th);
+        }
+
         return redirect('/admin/users')->with('success', 'Data Berhasil Ditambah');
     }
 
@@ -113,24 +132,19 @@ class UserController extends Controller
             'photo' => 'nullable|mimes:png,jpg,jpeg',
         ]);
 
-        // Cari karyawan berdasarkan ID
         $karyawan = Karyawan::findOrFail($id);
 
-        // Update data karyawan
         $karyawan->nama = $request->input('nama');
         $karyawan->email = $request->input('email');
         $karyawan->phone = $request->input('phone');
         $karyawan->tanggal_lahir = $request->input('tanggal_lahir');
-        $karyawan->status = $request->input('status', 'aktif'); // default 'aktif' jika tidak ada input
+        $karyawan->status = $request->input('status', 'aktif');
 
-        // Update foto jika ada file yang diupload
         if ($request->file('photo')) {
-            // Hapus foto lama jika ada
             if ($karyawan->photo && file_exists(public_path($karyawan->photo))) {
                 unlink(public_path($karyawan->photo));
             }
 
-            // Simpan foto baru
             $fileName = $request->nama . '.' . $request->file('photo')->extension();
             $filePath = public_path('gambar/users');
 
@@ -142,7 +156,6 @@ class UserController extends Controller
             $karyawan->photo = 'gambar/users/' . $fileName;
         }
 
-        // Update QR Code jika diperlukan
         $qrData = $karyawan->id;
         $qrFileName = 'qrcode-' . $karyawan->id . '.png';
         $qrPath = public_path('qrcodes/' . $qrFileName);
@@ -157,7 +170,6 @@ class UserController extends Controller
 
         $karyawan->qrcode = 'qrcodes/' . $qrFileName;
 
-        // Simpan perubahan ke database
         $karyawan->save();
 
         return redirect()->back()->with('success', 'Data karyawan berhasil diperbarui!');
@@ -168,7 +180,19 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $karyawan = Karyawan::findOrFail($id);
+
+        if ($karyawan->photo && file_exists(public_path($karyawan->photo))) {
+            File::delete(public_path($karyawan->photo));
+        }
+
+        if ($karyawan->qrcode && file_exists(public_path($karyawan->qrcode))) {
+            File::delete(public_path($karyawan->qrcode));
+        }
+
+        $karyawan->delete();
+
+        return redirect('/admin/users')->with('success', 'Data karyawan berhasil dihapus!');
     }
 
     public function scan($id)
