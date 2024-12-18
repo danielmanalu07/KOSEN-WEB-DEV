@@ -33,8 +33,8 @@
         }
 
         .logo {
-            width: 80px;
-            height: 80px;
+            width: 90px;
+            height: 100px;
             margin-bottom: 15px;
         }
 
@@ -65,10 +65,11 @@
 
 <body>
     <div class="kartu">
-        <img src="{{ public_path('assets/images/logo.jpeg') }}" alt="Logo" class="logo">
+        <img src="{{ public_path('assets/images/logodiskominfo.png') }}" alt="Logo" class="logo">
         <div class="name">{{ $data->nama }}</div>
         <div class="info">No Telepon: {{ $data->phone }}</div>
         <div class="info">Tanggal Lahir: {{ \Carbon\Carbon::parse($data->tanggal_lahir)->format('d M Y') }}</div>
+        <div class="info">Jabatan: {{ $data->jabatan }}</div> 
         <img src="{{ public_path($data->qrcode) }}" alt="QR Code" class="qr-code">
     </div>
 

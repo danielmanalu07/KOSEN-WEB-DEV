@@ -7,7 +7,6 @@ use App\Models\Karyawan;
 use File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class UserController extends Controller
@@ -36,10 +35,11 @@ class UserController extends Controller
     {
         $request->validate([
             'nama' => 'required',
-            'email' => 'required|email',
+            'email' => 'nullable|email',
             'phone' => 'required|numeric',
             'tanggal_lahir' => 'required|date',
             'photo' => 'required|mimes:png,jpg,jpeg',
+            'jabatan' => 'required|string', // Added jabatan validation
         ]);
 
         $user = new Karyawan();
@@ -47,6 +47,7 @@ class UserController extends Controller
         $user->email = $request->input('email');
         $user->phone = $request->input('phone');
         $user->tanggal_lahir = $request->input('tanggal_lahir');
+        $user->jabatan = $request->input('jabatan'); // Store jabatan
         $user->status = 'aktif';
 
         if ($request->file('photo')) {
@@ -104,7 +105,6 @@ class UserController extends Controller
     public function show(string $id)
     {
         $karyawans = Karyawan::findOrFail($id);
-
         return view('Karyawan.Show', compact('karyawans'));
     }
 
@@ -119,17 +119,15 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $request->validate([
             'nama' => 'required',
-            'email' => 'required|email',
+            'email' => 'nullable|email',
             'phone' => 'required|numeric',
             'tanggal_lahir' => 'required|date',
             'photo' => 'nullable|mimes:png,jpg,jpeg',
+            'jabatan' => 'required|string', // Ensure jabatan is validated
         ]);
 
         $karyawan = Karyawan::findOrFail($id);
@@ -138,6 +136,7 @@ class UserController extends Controller
         $karyawan->email = $request->input('email');
         $karyawan->phone = $request->input('phone');
         $karyawan->tanggal_lahir = $request->input('tanggal_lahir');
+        $karyawan->jabatan = $request->input('jabatan'); // Update jabatan
         $karyawan->status = $request->input('status', 'aktif');
 
         if ($request->file('photo')) {

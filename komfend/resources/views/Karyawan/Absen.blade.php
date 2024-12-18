@@ -9,67 +9,75 @@
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 </head>
 
-<body>
-    <div class="container col-lg-6 py-5">
-        <div class="card bg-white shadow rounded-3 p-3 border-0">
-            @if (Session::has('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>{{ Session()->get('error') }}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<body class="bg-light">
+    <div class="container col-lg-8 py-5">
+        <div class="card bg-white shadow rounded-3 border-0">
+            <div class="card-body">
+                <h3 class="card-title text-center text-primary mb-4">Scanner Absensi</h3>
+
+                <!-- Alerts Section -->
+                @if (Session::has('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>{{ Session()->get('error') }}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                @if (Session::has('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>{{ Session()->get('success') }}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                @if (Session::has('warning'))
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>{{ Session()->get('warning') }}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                @php
+                    $publishedAbsensis = $absensis->where('status', 'published');
+                @endphp
+
+                <div class="mb-3">
+                    <label for="absensiSelect" class="form-label">Pilih Absensi</label>
+                    <select class="form-select" id="absensiSelect" name="id_absensi" aria-label="Pilih Absensi">
+                        <option value="">Pilih Absensi</option>
+                        @foreach ($publishedAbsensis as $absensi)
+                            <option value="{{ $absensi->id }}"
+                                {{ session('selected_absensi_id') == $absensi->id ? 'selected' : '' }}>
+                                {{ $absensi->judul }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
-            @endif
 
-            @if (Session::has('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>{{ Session()->get('success') }}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <!-- Video Scanner -->
+                <div class="camera-container mb-4">
+                    <video id="preview" class="video-preview border border-primary rounded-3"
+                        style="width: 100%; height: auto;"></video>
                 </div>
-            @endif
 
-            @if (Session::has('warning'))
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>{{ Session()->get('warning') }}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            @php
-                $publishedAbsensis = $absensis->where('status', 'published');
-            @endphp
-
-            <div class="mb-3">
-                <label for="absensiSelect" class="form-label">Pilih Absensi</label>
-                <select class="form-select" id="absensiSelect" name="id_absensi" aria-label="Pilih Absensi">
-                    <option value="">Pilih Absensi</option>
-                    @foreach ($publishedAbsensis as $absensi)
-                        <option value="{{ $absensi->id }}"
-                            {{ session('selected_absensi_id') == $absensi->id ? 'selected' : '' }}>
-                            {{ $absensi->judul }}
-                        </option>
-                    @endforeach
-                </select>
+                <form action="{{ route('absen.store') }}" method="post" id="form">
+                    @csrf
+                    <input type="hidden" name="id_karyawan" id="id_karyawan">
+                    <input type="hidden" name="id_absensi" id="id_absensi">
+                </form>
             </div>
-
-            <div class="camera-container mb-4">
-                <video id="preview" class="video-preview"
-                    style="width: 100%; height: auto; border-radius: 8px;"></video>
-            </div>
-
-            <form action="{{ route('absen.store') }}" method="post" id="form">
-                @csrf
-                <input type="hidden" name="id_karyawan" id="id_karyawan">
-                <input type="hidden" name="id_absensi" id="id_absensi">
-            </form>
         </div>
 
+        <!-- Table Section -->
         <div class="table-responsive mt-5">
-            <table class="table table-bordered table-hover" id="absensiTable">
-                <thead>
+            <table class="table table-striped table-bordered shadow-sm">
+                <thead class="table-primary text-center">
                     <tr>
                         <th>No</th>
                         <th>Profile</th>
                         <th>Nama</th>
                         <th>Email</th>
+                        <th>Jabatan</th>
                         <th>Tanggal</th>
                         <th>Absensi</th>
                         <th>Status</th>
@@ -78,23 +86,35 @@
                 <tbody>
                     @forelse ($absensiKaryawans as $key => $absensiKaryawan)
                         <tr data-absensi-id="{{ $absensiKaryawan->id_absensi }}">
-                            <td>{{ $key + 1 }}</td>
-                            <td>
-                                <img src="{{ asset($absensiKaryawan->karyawan->photo) }}" alt=""
-                                    class="img-fluid" width="200px">
+                            <td class="text-center">{{ $key + 1 }}</td>
+                            <td class="text-center">
+                                <img src="{{ asset($absensiKaryawan->karyawan->photo) }}" alt="Profile Picture"
+                                    class="img-fluid rounded-circle" width="60">
                             </td>
                             <td>{{ $absensiKaryawan->karyawan->nama }}</td>
-                            <td>{{ $absensiKaryawan->karyawan->email }}</td>
+                            <td>
+                                @if (!empty($absensiKaryawan->karyawan->email))
+                                    {{ $absensiKaryawan->karyawan->email }}
+                                @else
+                                    <span style="color: black; font-weight: bold;">Email tidak tersedia</span>
+                                @endif
+                            </td>
+                            <td>{{ $absensiKaryawan->karyawan->jabatan }}</td>
                             <td>{{ \Carbon\Carbon::parse($absensiKaryawan->tanggal)->format('Y-m-d H:i') }}</td>
                             <td>{{ $absensiKaryawan->absensi->judul }}</td>
-                            <td>{{ $absensiKaryawan->status }}</td>
+                            <td class="text-center">
+                                <span class="badge {{ $absensiKaryawan->status == 'Hadir' ? 'bg-success' : 'bg-danger' }}">
+                                    {{ $absensiKaryawan->status }}
+                                </span>
+                            </td>
                         </tr>
                     @empty
                         <tr id="noDataRow">
-                            <td colspan="7" class="text-center">Tidak Ada Data Absen</td>
+                            <td colspan="8" class="text-center">Tidak Ada Data Absen</td>
                         </tr>
                     @endforelse
                 </tbody>
+                
             </table>
         </div>
     </div>
@@ -121,7 +141,7 @@
             const selectedAbsensiId = document.getElementById('absensiSelect').value;
             if (selectedAbsensiId) {
                 document.getElementById('id_absensi').value = selectedAbsensiId;
-                localStorage.setItem('selectedAbsensiId', selectedAbsensiId); // Simpan pilihan
+                localStorage.setItem('selectedAbsensiId', selectedAbsensiId);
                 document.getElementById('form').submit();
             } else {
                 alert('Silakan pilih absensi terlebih dahulu.');
@@ -144,11 +164,7 @@
             });
 
             const noDataRow = document.getElementById('noDataRow');
-            if (visibleRowCount === 0) {
-                noDataRow.style.display = '';
-            } else {
-                noDataRow.style.display = 'none';
-            }
+            noDataRow.style.display = visibleRowCount === 0 ? '' : 'none';
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -161,27 +177,6 @@
 
         document.getElementById('absensiSelect').addEventListener('change', function() {
             updateTableVisibility();
-
-            const selectedAbsensiId = this.value;
-            const tableRows = document.querySelectorAll('#absensiTable tbody tr:not(#noDataRow)');
-            let visibleRowCount = 0;
-
-            tableRows.forEach((row, index) => {
-                if (selectedAbsensiId === "" || row.getAttribute('data-absensi-id') === selectedAbsensiId) {
-                    row.style.display = '';
-                    visibleRowCount++;
-                    row.cells[0].textContent = visibleRowCount; // Update nomor urut
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-
-            const noDataRow = document.getElementById('noDataRow');
-            if (visibleRowCount === 0) {
-                noDataRow.style.display = '';
-            } else {
-                noDataRow.style.display = 'none';
-            }
             localStorage.setItem('selectedAbsensiId', this.value);
         });
     </script>

@@ -33,6 +33,10 @@
                             <div class="profile-info">
                                 <ul class="list-group list-group-unbordered mb-3">
                                     <li class="list-group-item text-center">
+                                        <b>Jabatan</b>
+                                        <p>{{ $karyawans->jabatan }}</p> <!-- Display Jabatan -->
+                                    </li>
+                                    <li class="list-group-item text-center">
                                         <b>Telepon</b>
                                         <p>{{ $karyawans->phone }}</p>
                                     </li>
@@ -62,22 +66,9 @@
                     </div>
 
                     <!-- /.card -->
-
-                    {{-- <!-- About Me Box -->
-                <div class="card card-primary">
-                    <div class="card-header">
-                        <h3 class="card-title">Profile</h3>
-                    </div>
-                    <!-- /.card-header -->
-                    <div class="card-body">
-                        <strong><i class="fas fa-map-marker-alt mr-1"></i> Alamat</strong>
-                        <p class="text-muted">{{ $karyawans->alamat }}</p>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-                <!-- /.card --> --}}
                 </div>
                 <!-- /.col -->
+
                 <div class="col-md-9">
                     <div class="card">
                         <div class="card-header p-2">
@@ -139,17 +130,22 @@
                                                 <option value="Aktif"
                                                     {{ $karyawans->status == 'Aktif' ? 'selected' : '' }}>Aktif</option>
                                                 <option value="Nonaktif"
-                                                    {{ $karyawans->status == 'Nonaktif' ? 'selected' : '' }}>
+                                                    {{ $karyawans->status == 'Nonaktif' ? 'selected' : '' }} >
                                                     Nonaktif</option>
                                             </select>
                                         </div>
 
+                                        <!-- Jabatan -->
+                                        <div class="form-group">
+                                            <label for="jabatan">Jabatan</label>
+                                            <input type="text" class="form-control" id="jabatan" name="jabatan"
+                                                value="{{ $karyawans->jabatan }}" required>
+                                        </div>
 
                                         <!-- Tombol Submit untuk Update Data -->
                                         <button type="submit" class="btn btn-primary">Update Data</button>
                                     </form>
                                 </div>
-
 
                                 <!-- Settings Tab -->
                                 <div class="tab-pane" id="settings">
@@ -225,7 +221,7 @@
 
                 <div class="kartu">
                     <div class="photo">
-                        <img src="{{ asset('assets/images/logo.jpeg') }}" class="img-fluid" alt="Foto Karyawan">
+                        <img src="{{ asset('assets/images/logodiskominfo.png') }}" class="img-fluid" alt="Foto Karyawan">
                     </div>
 
                     <div class="name">
@@ -236,6 +232,9 @@
                     </div>
                     <div class="tgl-lahir">
                         Tanggal Lahir: {{ \Carbon\Carbon::parse($karyawans->tanggal_lahir)->format('d M Y') }}
+                    </div>
+                    <div class="jabatan">
+                        Jabatan: {{ $karyawans->jabatan }} <!-- Display Jabatan -->
                     </div>
                     <div class="qr-code">
                         <img src="{{ asset($karyawans->qrcode) }}" class="img-fluid" width="200px" alt="QR Code">

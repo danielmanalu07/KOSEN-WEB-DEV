@@ -28,9 +28,16 @@
                     </div>
                     <div class="form-group mb-3">
                         <label for="" class="form-label">Phone</label>
-                        <input class="form-control" type="number" name="phone" id=""
-                            placeholder="No. Handphone">
+                        <input class="form-control" type="number" name="phone" id="" placeholder="No. Handphone">
                         @error('phone')
+                            <div class="alert alert-danger m-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="" class="form-label">Jabatan</label>
+                        <input class="form-control" type="text" name="jabatan" id="" placeholder="Jabatan">
+                        @error('jabatan')
                             <div class="alert alert-danger m-2">{{ $message }}</div>
                         @enderror
                     </div>

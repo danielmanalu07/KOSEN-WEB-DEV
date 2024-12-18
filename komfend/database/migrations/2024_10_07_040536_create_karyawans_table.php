@@ -15,12 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('photo');
-            $table->string('email');
+            $table->string('email')->nullable(); 
             $table->string('tanggal_lahir');
             $table->string('phone');
             $table->string('qrcode')->nullable();
             $table->enum('status', ['aktif', 'tidak aktif']);
+            $table->string('jabatan'); 
             $table->timestamps();
+
         });
     }
 

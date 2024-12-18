@@ -29,6 +29,7 @@
                                 <td>No</td>
                                 <td>Nama Pegawai</td>
                                 <td>Email</td>
+                                <td>Jabatan</td> <!-- Add Jabatan Column -->
                                 <td>Judul Absen</td>
                                 <td>Tanggal Absen</td>
                                 <td>Status Absen</td>
@@ -39,7 +40,8 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $absen->karyawan->nama }}</td>
-                                    <td>{{ $absen->karyawan->email }}</td>
+                                    <td>{{ $absen->karyawan->email ? $absen->karyawan->email : 'Email tidak terdaftar' }}</td>
+                                    <td>{{ $absen->karyawan->jabatan }}</td>
                                     <td>{{ $absen->absensi->judul }}</td>
                                     <td>{{ $absen->tanggal }}</td>
                                     <td>{{ $absen->status }}</td>
@@ -50,6 +52,7 @@
                                 </tr>
                             @endforelse
                         </tbody>
+                        
                     </table>
                 </div>
             </div>
