@@ -8,7 +8,7 @@ use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('Admin.Login');
+    return redirect()->route('Absensi');
 });
 
 Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function () {
