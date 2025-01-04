@@ -27,7 +27,7 @@ class AbsensiController extends Controller
         $absensi = Absensi::where('id', $request->id_absensi)->first();
         $karyawan = Karyawan::where('id', $request->id_karyawan)->first();
 
-        $currentTime = Carbon::now();
+        $checkIn = Carbon::now();
 
         if (!$absensi) {
             return redirect()->back()->with('error', 'Absensi tidak ditemukan.');
@@ -40,7 +40,7 @@ class AbsensiController extends Controller
         $startTime = Carbon::parse($absensi->start_time);
         $endTime = Carbon::parse($absensi->end_time);
 
-        if ($currentTime->lessThan($startTime)) {
+        if ($checkIn->lessThan($startTime)) {
             return redirect()->back()->with('error', 'Absensi Belum Dimulai');
         }
 
@@ -53,11 +53,12 @@ class AbsensiController extends Controller
             return redirect()->back()->with('error', 'Anda sudah absen untuk absensi ini.');
         }
 
-        $status = ($currentTime > $endTime->addMinute()) ? 'Terlambat' : 'Hadir';
+        $status = ($checkIn > $endTime->addMinute()) ? 'Terlambat' : 'Hadir';
 
         AbsensiKaryawan::create([
             'id_karyawan' => $request->id_karyawan,
-            'tanggal' => $currentTime,
+            'checkIn' => $checkIn,
+            'checkOut' => null,
             'status' => $status,
             'id_absensi' => $request->id_absensi,
         ]);

@@ -22,10 +22,6 @@
                     <!-- Profile Image -->
                     <div class="card card-primary card-outline">
                         <div class="card-body box-profile w-100">
-                            <div class="text-center">
-                                <img class="profile-user-img img-fluid img-circle" src="{{ asset($karyawans->photo) }}"
-                                    alt="User profile picture">
-                            </div>
                             <h3 class="profile-username text-center">{{ $karyawans->nama }}</h3>
                             <p class="text-center">{{ $karyawans->email }}</p>
 
@@ -130,7 +126,7 @@
                                                 <option value="Aktif"
                                                     {{ $karyawans->status == 'Aktif' ? 'selected' : '' }}>Aktif</option>
                                                 <option value="Nonaktif"
-                                                    {{ $karyawans->status == 'Nonaktif' ? 'selected' : '' }} >
+                                                    {{ $karyawans->status == 'Nonaktif' ? 'selected' : '' }}>
                                                     Nonaktif</option>
                                             </select>
                                         </div>
@@ -221,7 +217,8 @@
 
                 <div class="kartu">
                     <div class="photo">
-                        <img src="{{ asset('assets/images/logodiskominfo.png') }}" class="img-fluid" alt="Foto Karyawan">
+                        <img src="{{ asset('assets/images/logodiskominfo.png') }}" class="img-fluid"
+                            alt="Foto Karyawan">
                     </div>
 
                     <div class="name">

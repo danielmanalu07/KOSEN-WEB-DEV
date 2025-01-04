@@ -17,7 +17,8 @@ return new class extends Migration
             $table->foreign('id_karyawan')->references('id')->on('karyawans')->onDelete('cascade')->onUpdate('cascade');
             $table->unsignedBigInteger('id_absensi');
             $table->foreign('id_absensi')->references('id')->on('absensis')->onDelete('cascade')->onUpdate('cascade');
-            $table->dateTime('tanggal');
+            $table->dateTime('checkIn')->nullable();
+            $table->dateTime('checkOut')->nullable();
             $table->enum('status', ['Hadir', 'Terlambat']);
             $table->timestamps();
         });

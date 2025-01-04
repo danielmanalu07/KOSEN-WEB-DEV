@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Karyawan;
-use File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -38,7 +37,6 @@ class UserController extends Controller
             'email' => 'nullable|email',
             'phone' => 'required|numeric',
             'tanggal_lahir' => 'required|date',
-            'photo' => 'required|mimes:png,jpg,jpeg',
             'jabatan' => 'required|string', // Added jabatan validation
         ]);
 
@@ -50,17 +48,17 @@ class UserController extends Controller
         $user->jabatan = $request->input('jabatan'); // Store jabatan
         $user->status = 'aktif';
 
-        if ($request->file('photo')) {
-            $fileName = $request->nama . '.' . $request->file('photo')->extension();
-            $filePath = public_path('gambar/users');
+        // if ($request->file('photo')) {
+        //     $fileName = $request->nama . '.' . $request->file('photo')->extension();
+        //     $filePath = public_path('gambar/users');
 
-            if (!file_exists($filePath)) {
-                mkdir($filePath, 0755, true);
-            }
+        //     if (!file_exists($filePath)) {
+        //         mkdir($filePath, 0755, true);
+        //     }
 
-            $request->file('photo')->move($filePath, $fileName);
-            $user->photo = 'gambar/users/' . $fileName;
-        }
+        //     $request->file('photo')->move($filePath, $fileName);
+        //     $user->photo = 'gambar/users/' . $fileName;
+        // }
 
         $user->save();
 
@@ -96,7 +94,7 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'Terjadi Kesalahan Pengiriman Email. Silahkan Coba Lagi' . $th);
         }
 
-        return redirect('/admin/users')->with('success', 'Data Berhasil Ditambah');
+        return redirect()->route('users.index')->with('success', 'Data Berhasil Ditambah');
     }
 
     /**
@@ -139,21 +137,21 @@ class UserController extends Controller
         $karyawan->jabatan = $request->input('jabatan'); // Update jabatan
         $karyawan->status = $request->input('status', 'aktif');
 
-        if ($request->file('photo')) {
-            if ($karyawan->photo && file_exists(public_path($karyawan->photo))) {
-                unlink(public_path($karyawan->photo));
-            }
+        // if ($request->file('photo')) {
+        //     if ($karyawan->photo && file_exists(public_path($karyawan->photo))) {
+        //         unlink(public_path($karyawan->photo));
+        //     }
 
-            $fileName = $request->nama . '.' . $request->file('photo')->extension();
-            $filePath = public_path('gambar/users');
+        //     $fileName = $request->nama . '.' . $request->file('photo')->extension();
+        //     $filePath = public_path('gambar/users');
 
-            if (!file_exists($filePath)) {
-                mkdir($filePath, 0755, true);
-            }
+        //     if (!file_exists($filePath)) {
+        //         mkdir($filePath, 0755, true);
+        //     }
 
-            $request->file('photo')->move($filePath, $fileName);
-            $karyawan->photo = 'gambar/users/' . $fileName;
-        }
+        //     $request->file('photo')->move($filePath, $fileName);
+        //     $karyawan->photo = 'gambar/users/' . $fileName;
+        // }
 
         $qrData = $karyawan->id;
         $qrFileName = 'qrcode-' . $karyawan->id . '.png';
@@ -180,15 +178,6 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $karyawan = Karyawan::findOrFail($id);
-
-        if ($karyawan->photo && file_exists(public_path($karyawan->photo))) {
-            File::delete(public_path($karyawan->photo));
-        }
-
-        if ($karyawan->qrcode && file_exists(public_path($karyawan->qrcode))) {
-            File::delete(public_path($karyawan->qrcode));
-        }
-
         $karyawan->delete();
 
         return redirect('/admin/users')->with('success', 'Data karyawan berhasil dihapus!');

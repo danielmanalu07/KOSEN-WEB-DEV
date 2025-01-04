@@ -28,5 +28,13 @@ Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function
 
 });
 
+// Route::middleware(AbsensiMiddleware::class)->group(function () {
+//     Route::get('/absen', [AbsensiController::class, 'Index'])->name('Absensi');
+//     Route::post('absen/create', [AbsensiController::class, 'Store'])->name('absen.store');
+// });
+
 Route::get('/absen', [AbsensiController::class, 'Index'])->name('Absensi');
 Route::post('absen/create', [AbsensiController::class, 'Store'])->name('absen.store');
+Route::get('/notfound', function () {
+    return view('Absensi.PageNotFound');
+})->name('notfound');
