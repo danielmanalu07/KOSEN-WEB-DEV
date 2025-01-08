@@ -42,6 +42,14 @@
                             <div class="alert alert-danger m-2">{{ $message }}</div>
                         @enderror
                     </div>
+                    <div class="form-group mb-3">
+                        <label for="checkOut_time" class="form-label">Waktu Check Out</label>
+                        <input type="datetime-local" class="form-control" id="checkOut_time" name="checkOut_time"
+                            value="{{ old('checkOut_time') }}">
+                        @error('checkOut_time')
+                            <div class="alert alert-danger m-2">{{ $message }}</div>
+                        @enderror
+                    </div>
                     <button type="submit" class="btn btn-sm btn-primary">Buat Absensi</button>
                     <a href="{{ url('/admin/absensis') }}" class="btn btn-sm btn-danger">Kembali</a>
                 </form>

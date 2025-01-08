@@ -75,15 +75,15 @@ class AdminController extends Controller
         $query = AbsensiKaryawan::query();
 
         if ($request->filter_by == 'week') {
-            $query->whereBetween('tanggal', [now()->startOfWeek(), now()->endOfWeek()]);
+            $query->whereBetween('checkIn', [now()->startOfWeek(), now()->endOfWeek()]);
         } elseif ($request->filter_by == 'month') {
-            $query->whereMonth('tanggal', now()->month);
+            $query->whereMonth('checkIn', now()->month);
         } elseif ($request->filter_by == 'year') {
-            $query->whereYear('tanggal', now()->year);
+            $query->whereYear('checkIn', now()->year);
         }
 
         $absens = $query->orderByRaw("FIELD(status, 'Hadir', 'Terlambat')")
-            ->orderBy('tanggal', 'asc')->get();
+            ->orderBy('checkIn', 'asc')->get();
 
         if ($request->get('export') == 'pdf') {
             $pdf = FacadePdf::loadView('pdf.dataAbsen', ['data' => $absens]);
@@ -91,5 +91,13 @@ class AdminController extends Controller
         }
 
         return view('Admin.DataAbsensi', compact('absens'));
+    }
+
+    public function toggleAccess(Request $request)
+    {
+        $accessGranted = $request->input('access');
+        session(['absensi_access' => $accessGranted === 'on']);
+
+        return response()->json(['success' => true]);
     }
 }

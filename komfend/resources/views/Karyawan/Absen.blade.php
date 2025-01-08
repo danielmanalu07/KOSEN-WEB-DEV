@@ -7,111 +7,7 @@
     <title>Scanner</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <style>
-        .scanner-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            border-radius: 10px;
-        }
-
-        .video-preview {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .scanner-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 300px;
-            height: 300px;
-            transform: translate(-50%, -50%);
-            border-radius: 10px;
-            z-index: 1;
-        }
-
-        .scanner-line {
-            position: absolute;
-            width: 100%;
-            height: 2px;
-            background-color: rgba(0, 217, 255, 0.8);
-            animation: scan-move 2s infinite;
-        }
-
-        @keyframes scan-move {
-            0% {
-                top: 0;
-            }
-
-            50% {
-                top: 90%;
-            }
-
-            100% {
-                top: 0;
-            }
-        }
-
-        .scanner-border::before,
-        .scanner-border::after {
-            content: "";
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(0, 217, 255, 0.8);
-        }
-
-        .scanner-border .top-right {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 20px;
-            height: 20px;
-            border-top: 3px solid rgba(0, 217, 255, 0.8);
-            border-right: 3px solid rgba(0, 217, 255, 0.8);
-        }
-
-        .scanner-border .bottom-left {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 20px;
-            height: 20px;
-            border-bottom: 3px solid rgba(0, 217, 255, 0.8);
-            border-left: 3px solid rgba(0, 217, 255, 0.8);
-        }
-
-        .scanner-border::before {
-            top: -3px;
-            left: -3px;
-            border-right: none;
-            border-bottom: none;
-        }
-
-        .scanner-border::after {
-            bottom: -3px;
-            right: -3px;
-            border-left: none;
-            border-top: none;
-        }
-
-        .scanner-text {
-            position: absolute;
-            bottom: -60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: skyBlue;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 18px;
-            text-align: center;
-            width: max-content;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('assets/css/absen.css') }}">
 </head>
 
 <body class="bg-light">
@@ -160,6 +56,7 @@
                 </div>
 
                 <!-- Video Scanner -->
+                <!-- Tambahkan di dalam card-body -->
                 <div class="scanner-container">
                     <video id="preview" class="video-preview"></video>
                     <div class="scanner-overlay">
@@ -171,6 +68,8 @@
                         <div class="scanner-text">Scan Disini!</div>
                     </div>
                 </div>
+                <canvas id="canvas" style="display:none;"></canvas>
+                <img id="photo" alt="Captured Photo" style="display:none;">
 
 
 
@@ -182,13 +81,27 @@
             </div>
         </div>
 
+        <!-- Modal untuk menampilkan gambar -->
+        <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="imageModalLabel">Bukti Foto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="modalImage" src="" alt="Bukti Foto" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Table Section -->
         <div class="table-responsive mt-5">
-            <table class="table table-striped table-bordered shadow-sm">
+            <table class="table table-striped table-bordered shadow-sm text-center">
                 <thead class="table-primary text-center">
                     <tr>
                         <th>No</th>
-                        <th>Profile</th>
                         <th>Nama</th>
                         <th>Email</th>
                         <th>Jabatan</th>
@@ -196,20 +109,13 @@
                         <th>Check-Out</th>
                         <th>Absensi</th>
                         <th>Status</th>
+                        <th>Bukti Foto</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($absensiKaryawans as $key => $absensiKaryawan)
                         <tr data-absensi-id="{{ $absensiKaryawan->id_absensi }}">
                             <td class="text-center">{{ $key + 1 }}</td>
-                            <td class="text-center">
-                                @if (empty($absensiKaryawan->karyawan->photo))
-                                    <span style="color: black; font-weight: bold;">Photo tidak tersedia</span>
-                                @else
-                                    <img src="{{ asset($absensiKaryawan->karyawan->photo) }}" alt="Profile Picture"
-                                        class="img-fluid rounded-circle" width="60">
-                                @endif
-                            </td>
                             <td>{{ $absensiKaryawan->karyawan->nama }}</td>
                             <td>
                                 @if (!empty($absensiKaryawan->karyawan->email))
@@ -224,7 +130,7 @@
                                 @if (!empty($absensiKaryawan->checkOut))
                                     {{ \Carbon\Carbon::parse($absensiKaryawan->checkOut)->format('Y-m-d H:i') }}
                                 @else
-                                    <span style="color: black; font-weight: bold;">Belum Melakukan CheckOut</span>
+                                    <span style="color: black; font-weight: bold;">Belum Check-Out</span>
                                 @endif
                             </td>
                             <td>{{ $absensiKaryawan->absensi->judul }}</td>
@@ -234,10 +140,19 @@
                                     {{ $absensiKaryawan->status }}
                                 </span>
                             </td>
+                            <td>
+                                @if ($absensiKaryawan->capture)
+                                    <img src="{{ asset('photos/' . $absensiKaryawan->capture->photo) }}"
+                                        alt="Foto Absen" width="50" style="cursor: pointer;"
+                                        onclick="openImageModal('{{ asset('photos/' . $absensiKaryawan->capture->photo) }}')">
+                                @else
+                                    <span style="color: black; font-weight: bold;">Foto tidak tersedia</span>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr id="noDataRow">
-                            <td colspan="8" class="text-center">Tidak Ada Data Absen</td>
+                            <td colspan="9" class="text-center">Tidak Ada Data Absen</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -253,6 +168,9 @@
             const idKaryawanInput = document.getElementById('id_karyawan');
             const idAbsensiInput = document.getElementById('id_absensi');
             const form = document.getElementById('form');
+            const video = document.getElementById('preview');
+            const canvas = document.getElementById('canvas');
+            const photo = document.getElementById('photo');
 
             absensiSelect.value = localStorage.getItem('selectedAbsensiId') || "";
             absensiSelect.addEventListener('change', () => {
@@ -260,7 +178,7 @@
             });
 
             let scanner = new Instascan.Scanner({
-                video: document.getElementById('preview'),
+                video: video,
                 scanPeriod: 5,
                 mirror: false
             });
@@ -277,12 +195,33 @@
                 idKaryawanInput.value = content;
                 if (absensiSelect.value) {
                     idAbsensiInput.value = absensiSelect.value;
+
+                    // Capture photo from video stream
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                    photo.src = canvas.toDataURL('image/png');
+
+                    // Create a hidden input to send the photo data
+                    const photoInput = document.createElement('input');
+                    photoInput.type = 'hidden';
+                    photoInput.name = 'photo';
+                    photoInput.value = photo.src;
+                    form.appendChild(photoInput);
+
                     form.submit();
                 } else {
                     alert('Silakan pilih absensi terlebih dahulu.');
                 }
             });
         });
+
+        function openImageModal(imageUrl) {
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = imageUrl; // Set sumber gambar
+            const imageModal = new bootstrap.Modal(document.getElementById('imageModal')); // Inisialisasi modal
+            imageModal.show(); // Tampilkan modal
+        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"

@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('absensis', function (Blueprint $table) {
+        Schema::create('captures', function (Blueprint $table) {
             $table->id();
-            $table->string('judul');
-            $table->text('deskripsi');
-            $table->dateTime('start_time');
-            $table->dateTime('end_time');
-            $table->dateTime('checkOut_time')->nullable();
-            $table->enum('status', ['published', 'unpublished']);
+            $table->unsignedBigInteger('id_absensi_karyawans');
+            $table->foreign('id_absensi_karyawans')->references('id')->on('absensi_karyawans')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('photo');
             $table->timestamps();
         });
     }
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('absensis');
+        Schema::dropIfExists('captures');
     }
 };

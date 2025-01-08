@@ -4,6 +4,7 @@ use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\Admin\AbsensiController as AdminAbsensiController;
 use App\Http\Controllers\Admin\PdfController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Middleware\AbsensiMiddleware;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,7 @@ Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function
         Route::resource('absensis', AdminAbsensiController::class);
         Route::patch('/absensis/{id}/publish', [AdminAbsensiController::class, 'toggleStatus'])->name('toggle.status');
         Route::get('/dataabsen', 'AdminController@DataAbsen')->name('data.absen');
+        Route::post('/toggle-access', 'AdminController@toggleAccess')->name('toggle.access');
     });
 
 });
@@ -33,7 +35,8 @@ Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function
 //     Route::post('absen/create', [AbsensiController::class, 'Store'])->name('absen.store');
 // });
 
-Route::get('/absen', [AbsensiController::class, 'Index'])->name('Absensi');
+Route::get('/absen', [AbsensiController::class, 'Index'])->name('Absensi')->middleware(AbsensiMiddleware::class);
+
 Route::post('absen/create', [AbsensiController::class, 'Store'])->name('absen.store');
 Route::get('/notfound', function () {
     return view('Absensi.PageNotFound');

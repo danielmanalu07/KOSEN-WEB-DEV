@@ -36,10 +36,12 @@ class AbsensiController extends Controller
             'deskripsi' => 'required',
             'start_time' => 'required|date_format:Y-m-d\TH:i',
             'end_time' => 'required|date_format:Y-m-d\TH:i',
+            'checkOut_time' => 'required|date_format:Y-m-d\TH:i',
         ]);
 
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
+        $checkOut_time = Carbon::parse($request->checkOut_time);
         $now = Carbon::now();
 
         if ($startTime->lessThan($now->subMinute())) {
@@ -50,11 +52,16 @@ class AbsensiController extends Controller
             return redirect()->back()->with('error', 'Waktu Selesai tidak boleh kurang dari atau sama dengan Waktu Mulai');
         }
 
+        if ($checkOut_time->lessThanOrEqualTo($startTime) && $checkOut_time->lessThanOrEqualTo($endTime)) {
+            return redirect()->back()->with('error', 'Waktu check out tidak boleh kurang dari atau sama dengan Waktu Mulai dan Waktu Selesai');
+        }
+
         $absensi = new Absensi();
         $absensi->judul = $request->judul;
         $absensi->deskripsi = $request->deskripsi;
         $absensi->start_time = $request->start_time;
         $absensi->end_time = $request->end_time;
+        $absensi->checkOut_time = $request->checkOut_time;
         $absensi->status = 'unpublished';
         $absensi->save();
 
@@ -88,10 +95,12 @@ class AbsensiController extends Controller
             'deskripsi' => 'required',
             'start_time' => 'required|date_format:Y-m-d\TH:i',
             'end_time' => 'required|date_format:Y-m-d\TH:i',
+            'checkOut_time' => 'required|date_format:Y-m-d\TH:i',
         ]);
 
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
+        $checkOut_time = Carbon::parse($request->checkOut_time);
         $now = Carbon::now();
 
         $absensi = Absensi::findOrFail($id);
@@ -99,6 +108,7 @@ class AbsensiController extends Controller
         $absensi->deskripsi = $request->deskripsi;
         $absensi->start_time = $request->start_time;
         $absensi->end_time = $request->end_time;
+        $absensi->checkOut_time = $request->checkOut_time;
 
         $absensi->update();
 

@@ -9,7 +9,18 @@ class AbsensiKaryawan extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'id_karyawan',
+        'checkIn',
+        'checkOut',
+        'status',
+        'id_absensi',
+    ];
+
+    public function capture()
+    {
+        return $this->hasOne(Capture::class, 'id_absensi_karyawans');
+    }
 
     public function karyawan()
     {
